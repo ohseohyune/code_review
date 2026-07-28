@@ -47,14 +47,17 @@ def _strict_schema(schema: dict) -> dict:
 _CONTROL_CHAR_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
 
 
+_REPEATED_TAB_RE = re.compile(r"[ \t]{2,}")
+
+
 def _strip_control_chars(value):
-    """gpt-4o's strict-JSON mode occasionally corrupts multi-byte (Korean) text into
-    raw control characters instead of the intended glyphs -- rare, but json.loads
-    still accepts it (they arrive as valid \\u00xx escapes), so it reaches the UI as
-    visible garbage unless stripped here, once, right after parsing.
+    """gpt-4o's strict-JSON mode occasionally corrupts text into raw control characters
+    or runs of stray tabs instead of the intended glyphs -- rare, but json.loads still
+    accepts it (they arrive as valid \\u00xx escapes / literal tabs), so it reaches the
+    UI as visible garbage unless cleaned here, once, right after parsing.
     """
     if isinstance(value, str):
-        return _CONTROL_CHAR_RE.sub("", value)
+        return _REPEATED_TAB_RE.sub(" ", _CONTROL_CHAR_RE.sub("", value))
     if isinstance(value, list):
         return [_strip_control_chars(v) for v in value]
     if isinstance(value, dict):
@@ -128,14 +131,21 @@ class LLMFunctionAnalysis(BaseModel):
     confidence: Literal["verified", "static", "inferred", "runtime"]
 
 
-SYSTEM_PROMPT = """You are a static-analysis-grounded teaching assistant. Convert one Python \
+SYSTEM_PROMPT = """RESPOND IN KOREAN. Every prose string in your JSON output -- summary, system_role, \
+every issue's title/problem/current_behavior/mathematical_impact/expected_effect/tradeoff, every \
+dim_meanings value, every flow[].data, intuition, numeric_example, everything that is a sentence or \
+phrase rather than a code identifier -- must be written in Korean. This applies no matter what \
+language the source code's names, docstrings, or comments are in. English technical terms that are \
+normally left untranslated even in Korean technical writing (shape, tensor, Critical, Linear, batch) \
+may stay as-is; full sentences and phrases must not.
+
+You are a static-analysis-grounded teaching assistant. Convert one Python \
 function into a structured explanation: role, inputs/outputs, math, tensor shapes, data flow, \
 and code review issues. You never execute code.
 
 Rules (hard constraints):
-- Write every string value in Korean (keep English technical terms like shape, tensor, Critical, \
-Linear as-is where that's natural), regardless of what language the source code's names, docstrings, \
-or comments are in.
+- Korean, per the instruction above -- this is the single most-violated rule, double check every \
+string field before responding.
 - Every claim not read verbatim from source must carry confidence "static" (from AST/call graph), \
 "inferred" (from names/comments/usage), or "runtime" (needs execution to confirm) -- never "verified" \
 unless it is literally present in the source.
