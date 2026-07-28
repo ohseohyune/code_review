@@ -51,7 +51,7 @@ def persist_project(db: Session, name: str, root_dir: Path) -> ProjectRow:
         row.entry_point = {**analysis.entry_point,
                             "function_id": f"{project_id}::{analysis.entry_point['function_id']}"}
 
-    if os.environ.get("ANTHROPIC_API_KEY"):
+    if os.environ.get("OPENAI_API_KEY"):
         entry_id = analysis.entry_point["function_id"] if analysis.entry_point else None
         entry_fn = next((f for f in analysis.functions if f.id == entry_id), None)
         try:

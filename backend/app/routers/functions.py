@@ -39,7 +39,7 @@ def _run_llm(db: Session, fn: FunctionRow) -> FunctionAnalysis:
     local_id = fn.id.split("::", 1)[1]
     record = next(f for f in project_analysis.functions if f.id == local_id)
 
-    if not os.environ.get("ANTHROPIC_API_KEY"):
+    if not os.environ.get("OPENAI_API_KEY"):
         return build_static_analysis(record, project_analysis)
 
     try:
@@ -79,8 +79,8 @@ def retry_analysis(function_id: str, db: Session = Depends(get_db)):
 
 @router.post("/{function_id}/ask", response_model=AskResponse)
 def ask_function(function_id: str, body: AskRequest, db: Session = Depends(get_db)):
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        raise HTTPException(503, "ANTHROPIC_API_KEY is not set on the server -- AI 질문에 답할 수 없습니다.")
+    if not os.environ.get("OPENAI_API_KEY"):
+        raise HTTPException(503, "OPENAI_API_KEY is not set on the server -- AI 질문에 답할 수 없습니다.")
     fn = _get_or_404(db, function_id)
     project = db.get(ProjectRow, fn.project_id)
     project_analysis = analyze_project(Path(project.root_dir))

@@ -329,17 +329,9 @@ export default function TeacherPanel({
         {analysis && (
           <>
             {analysis.equation === null && (
-              <div className="rounded-2xl bg-[rgba(255,149,0,.08)] p-4" style={{ border: "0.5px solid rgba(255,149,0,.3)" }}>
-                <p className="text-[12.5px] text-[#C93400]">
-                  아래 카드들은 AI 없이, 코드 구조만 보고 자동으로 채운 내용이에요. 수식 설명과 코드
-                  리뷰처럼 &ldquo;의미&rdquo;를 이해해야 하는 부분은 AI가 필요한데, 지금 서버에 AI 키가
-                  설정되어 있지 않아서 비어 있습니다. (서버 관리자가 <code>backend/.env</code>에
-                  API 키를 넣으면 바로 채워집니다.)
-                </p>
-                <button onClick={onRetry} className="mt-2 h-8 rounded-full bg-[#007AFF] px-4 text-[12.5px] font-semibold text-white">
-                  AI 분석 다시 시도
-                </button>
-              </div>
+              <button onClick={onRetry} className="h-9 self-start rounded-full bg-[#007AFF] px-4 text-[12.5px] font-semibold text-white">
+                AI 분석 다시 시도
+              </button>
             )}
             {visible(0) && (
             <CardShell kicker="① 이 함수는 무엇을 하는가" certainty={analysis.confidence}>

@@ -1,25 +1,73 @@
 """Per-function LLM call producing cards ①-⑥ (FunctionAnalysis), per DATA_MODEL.md.
 
 Never sends the whole repo -- only the function's own source plus a scoped context
-(callers, callees, related class fields). Structured output is enforced via forced
-tool use so the model cannot return free prose outside the schema.
+(callers, callees, related class fields). Structured output is enforced via OpenAI's
+strict Structured Outputs (response_format: json_schema, strict=True) -- the API
+itself constrains generation to the schema (including enum/Literal values), so the
+model cannot return free prose or an off-schema value. A malformed response still
+raises on Pydantic validation and the caller falls back to the static-only analysis,
+same as any other API error would.
 """
 import os
 import json
 from typing import Literal
 
-from anthropic import Anthropic
+from openai import OpenAI
 from pydantic import BaseModel
 
 from app.analysis.ast_parser import FunctionRecord, ProjectAnalysis
-from app.schemas import FunctionAnalysis, Issue
+from app.schemas import FunctionAnalysis, Issue, CodeRef, VariableInfo, EquationInfo, ShapeStep, FlowNode
 
-MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-5")
+MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o")
+
+
+def _strict_schema(schema: dict) -> dict:
+    """OpenAI's strict Structured Outputs mode requires every object to set
+    additionalProperties: false and list every property as required (optionality is
+    expressed by the property's type being nullable, not by omitting it) -- Pydantic's
+    model_json_schema() doesn't produce that by default, so patch it in recursively.
+    """
+    if schema.get("type") == "object" and "properties" in schema:
+        schema["additionalProperties"] = False
+        schema["required"] = list(schema["properties"].keys())
+        for v in schema["properties"].values():
+            _strict_schema(v)
+    if "items" in schema:
+        _strict_schema(schema["items"])
+    if "$defs" in schema:
+        for v in schema["$defs"].values():
+            _strict_schema(v)
+    for key in ("anyOf", "allOf", "oneOf"):
+        for v in schema.get(key, []):
+            _strict_schema(v)
+    return schema
+
+
+def _call_structured(system_prompt: str, user_content: str, schema_model: type[BaseModel],
+                      schema_name: str) -> BaseModel:
+    """One strict-schema chat completion, validated against schema_model. Raises on any
+    malformed response -- callers are expected to catch and fall back gracefully.
+    """
+    client = OpenAI()  # reads OPENAI_API_KEY from env
+    schema = _strict_schema(schema_model.model_json_schema())
+    resp = client.chat.completions.create(
+        model=MODEL,
+        response_format={
+            "type": "json_schema",
+            "json_schema": {"name": schema_name, "strict": True, "schema": schema},
+        },
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_content},
+        ],
+    )
+    raw = json.loads(resp.choices[0].message.content)
+    return schema_model.model_validate(raw)
 
 
 # --- LLM-facing schema: identical to FunctionAnalysis/Issue but without the fields we
 # already know statically (id/file_path/qualified_name/line_range), and with Issue.diff
-# as a list of objects instead of tuples (simpler JSON Schema for tool-use validation).
+# as a list of objects instead of tuples (simpler JSON Schema).
 
 class DiffLine(BaseModel):
     kind: Literal["ctx", "add", "del"]
@@ -32,7 +80,7 @@ class LLMIssue(BaseModel):
     severity: Literal["Critical", "Warning", "Suggestion", "Information"]
     title: str
     problem: str
-    evidence: list[dict]
+    evidence: list[CodeRef]
     current_behavior: str
     mathematical_impact: str
     expected_effect: str
@@ -40,23 +88,26 @@ class LLMIssue(BaseModel):
     tradeoff: str
 
 
+class DimMeaning(BaseModel):
+    dim: str
+    meaning: str
+
+
 class LLMFunctionAnalysis(BaseModel):
     summary: str
     system_role: str
     chain: list[str]
-    inputs: list[dict]
-    outputs: list[dict]
+    inputs: list[VariableInfo]
+    outputs: list[VariableInfo]
     side_effects: list[str]
-    equation: dict | None
-    shape_chain: list[dict]
-    dim_meanings: dict[str, str]
-    flow: list[dict]
+    equation: EquationInfo | None
+    shape_chain: list[ShapeStep]
+    dim_meanings: list[DimMeaning]  # {B: "batch size"} as pairs -- strict mode can't do free-form maps
+    flow: list[FlowNode]
     warnings: list[str]
     issues: list[LLMIssue]
     confidence: Literal["verified", "static", "inferred", "runtime"]
 
-
-TOOL_SCHEMA = LLMFunctionAnalysis.model_json_schema()
 
 SYSTEM_PROMPT = """You are a static-analysis-grounded teaching assistant. Convert one Python \
 function into a structured explanation: role, inputs/outputs, math, tensor shapes, data flow, \
@@ -66,20 +117,33 @@ Rules (hard constraints):
 - Every claim not read verbatim from source must carry confidence "static" (from AST/call graph), \
 "inferred" (from names/comments/usage), or "runtime" (needs execution to confirm) -- never "verified" \
 unless it is literally present in the source.
-- Refuse math for I/O, logging, or orchestration functions: set equation.representation = "sequence", \
-fill equation.not_math_reason, and equation.sequence with the ordered steps.
+- Refuse math ONLY for genuine I/O, logging, or orchestration functions (file/network calls, config \
+loading, control-flow that just dispatches to other functions with no computation of its own): set \
+equation.representation = "sequence", fill equation.not_math_reason, and equation.sequence with the \
+ordered steps. Do NOT refuse math for functions that compute something, even briefly -- a linear layer \
++ activation is "tensor_construction" or "latex" (e.g. h = tanh(W₁x + b₁)), a masked/normalized \
+concatenation is "tensor_construction", an if/elif dispatching on a value to different constants is \
+"piecewise", and a matrix solve is "matrix". When in doubt between "sequence" and an actual math \
+representation, prefer the math representation -- that conversion is this tool's whole purpose.
 - Never state a unit, physical meaning, or numeric fact as certain without evidence in the provided source.
 - Never emit an issue without at least one evidence entry with a real file_path and line number from \
 the provided source.
 - code_lines fields must reference real line numbers from the provided source (cross-highlighting \
 depends on this being accurate).
 - Keep every string short -- this renders in a fixed-width UI panel, not a document.
+- Whenever representation isn't "sequence", equation.tokens MUST be non-empty -- it's what actually \
+renders as the formula (the UI shows tokens via KaTeX per-symbol, not latex directly). Break the \
+expression into MathToken pieces, e.g. for h = tanh(W₁x + b₁): [{text:"h",kind:"var"}, \
+{text:"=",kind:"op"}, {text:"\\tanh(",kind:"fn"}, {text:"W_1",kind:"var",code_lines:[..]}, \
+{text:"x",kind:"var"}, {text:"+",kind:"op"}, {text:"b_1",kind:"var",code_lines:[..]}, {text:")",kind:"fn"}]. \
+Also fill equation.latex with the same expression as one LaTeX string when representation is "latex".
 - shape entries are symbolic (e.g. "B", "6", "5") when the batch dimension is runtime-only; never \
 invent a concrete batch size.
 - The context includes a STATICALLY VERIFIED SHAPES section produced by deterministic AST analysis \
 (not by you). For any variable listed there, your shape_chain entry MUST reuse that exact shape and \
 set confidence to "static" -- do not contradict it, round it, or replace a symbolic dim with a guessed \
 number. For variables not listed there, infer as usual but use "inferred" or "runtime", never "static".
+- Respond with JSON only, no markdown fences, no prose outside the JSON object.
 """
 
 
@@ -115,7 +179,7 @@ def _context_block(fn: FunctionRecord, project: ProjectAnalysis) -> str:
 
 class AskAnswer(BaseModel):
     answer: str
-    evidence: list[dict]
+    evidence: list[CodeRef]
 
 
 ASK_SYSTEM_PROMPT = """You are answering one follow-up question about a single Python function, inside \
@@ -124,32 +188,16 @@ a teaching tool. Structure the answer as, in order: 직접 답변 → 근거 코
 This renders in a narrow chat panel, not a document: no long paragraphs. Only state facts grounded in \
 the provided source; if the source doesn't answer it, say so plainly instead of guessing. Include at \
 least one evidence entry with a real file_path and line number from the provided source whenever you \
-reference specific code."""
+reference specific code. Respond with JSON only."""
 
 
 def answer_question(fn: FunctionRecord, project: ProjectAnalysis, question: str,
                      history: list[dict]) -> tuple[str, list[dict]]:
-    client = Anthropic()
     context = _context_block(fn, project)
     history_block = "\n".join(f"{h.get('role', 'user').upper()}: {h.get('text', '')}" for h in history[-6:])
+    user_content = f"{context}\n\nPREVIOUS Q&A:\n{history_block or '(none)'}\n\nQUESTION: {question}"
 
-    resp = client.messages.create(
-        model=MODEL,
-        max_tokens=1024,
-        system=ASK_SYSTEM_PROMPT,
-        tools=[{
-            "name": "submit_answer",
-            "description": "Submit the answer to the user's question about this function.",
-            "input_schema": AskAnswer.model_json_schema(),
-        }],
-        tool_choice={"type": "tool", "name": "submit_answer"},
-        messages=[{
-            "role": "user",
-            "content": f"{context}\n\nPREVIOUS Q&A:\n{history_block or '(none)'}\n\nQUESTION: {question}",
-        }],
-    )
-    tool_use = next(b for b in resp.content if b.type == "tool_use")
-    parsed = AskAnswer.model_validate(tool_use.input)
+    parsed = _call_structured(ASK_SYSTEM_PROMPT, user_content, AskAnswer, "submit_answer")
     return parsed.answer, parsed.evidence
 
 
@@ -163,53 +211,25 @@ list and the entry-point function's source -- not the whole repo. Say what the p
 (domain, purpose), not how many files/functions/classes it has (that's shown separately in the \
 UI already, don't repeat it). No jargon dump, no hedging filler. If the entry point's purpose \
 genuinely isn't clear from what you're given, describe what the entry point concretely does \
-instead of guessing the domain."""
+instead of guessing the domain. Respond with JSON only."""
 
 
 def summarize_project(entry_fn: FunctionRecord | None, project: ProjectAnalysis) -> str | None:
     """One cheap, best-effort LLM call for the Overview headline -- never required (static
     analysis always has a usable fallback), so callers should swallow failures.
     """
-    client = Anthropic()
     lines = [f"FILES: {project.files}", f"CLASSES: {[c.name for c in project.classes]}"]
     if entry_fn:
         lines.append(f"ENTRY POINT: {entry_fn.qualified_name}\n{entry_fn.source}")
 
-    resp = client.messages.create(
-        model=MODEL,
-        max_tokens=256,
-        system=PROJECT_SUMMARY_PROMPT,
-        tools=[{
-            "name": "submit_summary",
-            "description": "Submit the one-sentence Korean project summary.",
-            "input_schema": ProjectSummaryResult.model_json_schema(),
-        }],
-        tool_choice={"type": "tool", "name": "submit_summary"},
-        messages=[{"role": "user", "content": "\n".join(lines)}],
-    )
-    tool_use = next(b for b in resp.content if b.type == "tool_use")
-    return ProjectSummaryResult.model_validate(tool_use.input).summary
+    parsed = _call_structured(PROJECT_SUMMARY_PROMPT, "\n".join(lines),
+                               ProjectSummaryResult, "submit_summary")
+    return parsed.summary
 
 
 def analyze_function(fn: FunctionRecord, project: ProjectAnalysis) -> FunctionAnalysis:
-    client = Anthropic()  # reads ANTHROPIC_API_KEY from env
     context = _context_block(fn, project)
-
-    resp = client.messages.create(
-        model=MODEL,
-        max_tokens=4096,
-        system=SYSTEM_PROMPT,
-        tools=[{
-            "name": "submit_analysis",
-            "description": "Submit the structured six-card analysis for this function.",
-            "input_schema": TOOL_SCHEMA,
-        }],
-        tool_choice={"type": "tool", "name": "submit_analysis"},
-        messages=[{"role": "user", "content": context}],
-    )
-
-    tool_use = next(b for b in resp.content if b.type == "tool_use")
-    parsed = LLMFunctionAnalysis.model_validate(tool_use.input)
+    parsed = _call_structured(SYSTEM_PROMPT, context, LLMFunctionAnalysis, "submit_analysis")
 
     issues = [
         Issue(
@@ -242,7 +262,7 @@ def analyze_function(fn: FunctionRecord, project: ProjectAnalysis) -> FunctionAn
         side_effects=parsed.side_effects,
         equation=parsed.equation,
         shape_chain=parsed.shape_chain,
-        dim_meanings=parsed.dim_meanings,
+        dim_meanings={d.dim: d.meaning for d in parsed.dim_meanings},
         flow=parsed.flow,
         warnings=parsed.warnings,
         issues=issues,

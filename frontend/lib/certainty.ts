@@ -12,7 +12,7 @@ export const CERTAINTY: Record<
     desc: "코드에 그대로 쓰여 있는 내용이에요. 해석이나 추측이 없습니다.",
   },
   static: {
-    label: "코드에서 자동 추출",
+    label: "자동 추출",
     dot: "#007AFF",
     text: "#0062CC",
     chipBg: "rgba(0,122,255,.12)",

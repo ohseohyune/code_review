@@ -2,7 +2,7 @@ fastapi
 httpx
 uvicorn[standard]
 sqlalchemy
-anthropic
+openai
 python-multipart
 python-dotenv
 pydantic
