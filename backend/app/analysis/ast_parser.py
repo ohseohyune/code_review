@@ -5,6 +5,7 @@ table) -- good enough to draw the call graph and flow cards for Phase 1.
 """
 import ast
 import logging
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -79,6 +80,22 @@ def list_scannable_files(root: Path) -> list[str]:
             if p.is_file() and p.suffix in exts]
 
 
+_ANSI_ESCAPE_RE = re.compile(r"\x1b\[[0-9;]*[a-zA-Z]")
+
+
+def _clean_docstring(doc: str | None) -> str | None:
+    """Docstrings are displayed verbatim in the UI, so strip content that only
+    makes sense in a terminal or a LaTeX document: ANSI color codes some tools
+    embed in generated docstrings, and inline-math delimiters (\\( \\) \\[ \\])
+    -- we show the wrapped text plainly rather than rendering it as math here.
+    """
+    if doc is None:
+        return None
+    doc = _ANSI_ESCAPE_RE.sub("", doc)
+    doc = doc.replace("\\(", "").replace("\\)", "").replace("\\[", "").replace("\\]", "")
+    return doc
+
+
 def _decorator_name(node: ast.expr) -> str:
     if isinstance(node, ast.Name):
         return node.id
@@ -147,7 +164,7 @@ def parse_file(path: Path, root: Path) -> tuple[list[ClassRecord], list[Function
         fid = f"{rel_id}::{class_name + '.' if class_name else ''}{node.name}"
         end = getattr(node, "end_lineno", node.lineno)
         returns = ast.unparse(node.returns) if node.returns else None
-        doc = ast.get_docstring(node)
+        doc = _clean_docstring(ast.get_docstring(node))
         functions.append(FunctionRecord(
             id=fid,
             name=node.name,

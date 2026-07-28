@@ -3,7 +3,7 @@
 """
 from pathlib import Path
 
-from app.analysis.ast_parser import analyze_project
+from app.analysis.ast_parser import analyze_project, _clean_docstring
 
 DEMO_ROOT = Path(__file__).resolve().parent.parent / "demo_project"
 
@@ -90,3 +90,9 @@ def test_secret_scan_covers_yaml_config(tmp_path):
     assert "config.yaml" in files
     warnings = scan_secrets(tmp_path, files)
     assert any("config.yaml" in w for w in warnings)
+
+
+def test_clean_docstring_strips_ansi_and_latex_delimiters():
+    assert _clean_docstring("\x1b[31mred\x1b[0m text") == "red text"
+    assert _clean_docstring("rotation \\( R \\) and \\[ p \\]") == "rotation  R  and  p "
+    assert _clean_docstring(None) is None
