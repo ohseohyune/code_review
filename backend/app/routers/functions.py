@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 
@@ -7,11 +8,12 @@ from sqlalchemy.orm import Session
 from app.db import get_db
 from app.models import FunctionRow, ProjectRow
 from app.schemas import FunctionSource, FunctionAnalysis, AskRequest, AskResponse
-from app.analysis.ast_parser import analyze_project
+from app.analysis.ast_parser import analyze_project, FunctionRecord, ProjectAnalysis
 from app.analysis.llm import analyze_function, answer_question
 from app.analysis.static_summary import build_static_analysis
 
 router = APIRouter(prefix="/functions", tags=["functions"])
+logger = logging.getLogger("code_teacher")
 
 
 def _get_or_404(db: Session, function_id: str) -> FunctionRow:
@@ -19,6 +21,30 @@ def _get_or_404(db: Session, function_id: str) -> FunctionRow:
     if not fn:
         raise HTTPException(404, "function not found")
     return fn
+
+
+def _resolve_record(fn: FunctionRow, project_analysis: ProjectAnalysis) -> tuple[FunctionRecord, ProjectAnalysis]:
+    """Match the DB row against a fresh re-parse of the project by id. If the ids ever
+    drift out of sync (e.g. the on-disk project changed shape between the original
+    upload and this request), fall back to rebuilding a bare-bones FunctionRecord
+    straight from the DB row instead of crashing -- less context (no call graph, no
+    deterministic shape facts) but still real data, never a 500.
+    """
+    local_id = fn.id.split("::", 1)[1]
+    record = next((f for f in project_analysis.functions if f.id == local_id), None)
+    if record is not None:
+        return record, project_analysis
+
+    logger.warning("function id %s not found in fresh re-parse of %s -- falling back to the DB row",
+                    local_id, fn.project_id)
+    record = FunctionRecord(
+        id=local_id, name=fn.name, qualified_name=fn.qualified_name, file_path=fn.file_path,
+        class_name=fn.class_name, line_range=(fn.line_start, fn.line_end), args=fn.args or [],
+        returns=fn.returns, docstring=fn.docstring, decorators=[], source=fn.source,
+    )
+    fallback_project = ProjectAnalysis(files=[], excluded_files=[], classes=[], functions=[record],
+                                        entry_point=None, call_edges=[], imports={})
+    return record, fallback_project
 
 
 @router.get("/{function_id}", response_model=FunctionSource)
@@ -36,8 +62,7 @@ def _run_llm(db: Session, fn: FunctionRow) -> FunctionAnalysis:
     """
     project = db.get(ProjectRow, fn.project_id)
     project_analysis = analyze_project(Path(project.root_dir))
-    local_id = fn.id.split("::", 1)[1]
-    record = next(f for f in project_analysis.functions if f.id == local_id)
+    record, project_analysis = _resolve_record(fn, project_analysis)
 
     if not os.environ.get("OPENAI_API_KEY"):
         return build_static_analysis(record, project_analysis)
@@ -45,6 +70,7 @@ def _run_llm(db: Session, fn: FunctionRow) -> FunctionAnalysis:
     try:
         result = analyze_function(record, project_analysis)
     except Exception:
+        logger.exception("AI analysis failed for %s -- falling back to static analysis", fn.id)
         return build_static_analysis(record, project_analysis)
     result.id = fn.id   # re-namespace to the DB-qualified id
 
@@ -84,8 +110,7 @@ def ask_function(function_id: str, body: AskRequest, db: Session = Depends(get_d
     fn = _get_or_404(db, function_id)
     project = db.get(ProjectRow, fn.project_id)
     project_analysis = analyze_project(Path(project.root_dir))
-    local_id = fn.id.split("::", 1)[1]
-    record = next(f for f in project_analysis.functions if f.id == local_id)
+    record, project_analysis = _resolve_record(fn, project_analysis)
 
     answer, evidence = answer_question(record, project_analysis, body.question, body.history)
     return AskResponse(answer=answer, evidence=evidence)

@@ -1,3 +1,5 @@
+import logging
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -6,6 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.db import Base, engine
 from app.routers import projects, functions, events
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 
 Base.metadata.create_all(bind=engine)
 

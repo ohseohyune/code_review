@@ -4,10 +4,13 @@ No code is ever executed. Best-effort name-based call resolution (not a full sym
 table) -- good enough to draw the call graph and flow cards for Phase 1.
 """
 import ast
+import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from app.analysis.shapes import infer_shapes, ShapeFact
+
+logger = logging.getLogger("code_teacher")
 
 
 @dataclass
@@ -119,7 +122,10 @@ def _collect_calls(fn: ast.FunctionDef) -> list[str]:
 def parse_file(path: Path, root: Path) -> tuple[list[ClassRecord], list[FunctionRecord], dict | None, list[str]] | None:
     """Returns None if the file has a SyntaxError (partial-success path)."""
     rel = path.relative_to(root).as_posix()
-    text = path.read_text()
+    try:
+        text = path.read_text()
+    except UnicodeDecodeError:
+        text = path.read_text(errors="replace")  # non-UTF8 file -- still worth a best-effort parse
     try:
         tree = ast.parse(text, filename=rel)
     except SyntaxError:
@@ -204,8 +210,15 @@ def analyze_project(root: Path) -> ProjectAnalysis:
     imports: dict[str, list[str]] = {}
 
     for path in py_files:
-        result = parse_file(path, root)
         rel = path.relative_to(root).as_posix()
+        try:
+            result = parse_file(path, root)
+        except Exception:
+            # One file's edge case (unusual syntax our shape/call analysis doesn't handle,
+            # a weird encoding, etc.) must never take the rest of the project down with it.
+            logger.exception("failed to analyze %s -- excluding it and continuing", rel)
+            excluded.append({"path": rel, "reason": "분석 중 오류 발생"})
+            continue
         if result is None:
             excluded.append({"path": rel, "reason": "Python 문법 오류"})
             continue
