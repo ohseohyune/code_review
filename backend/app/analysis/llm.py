@@ -139,7 +139,11 @@ renders as the formula (the UI shows tokens via KaTeX per-symbol, not latex dire
 expression into MathToken pieces, e.g. for h = tanh(W₁x + b₁): [{text:"h",kind:"var"}, \
 {text:"=",kind:"op"}, {text:"\\tanh(",kind:"fn"}, {text:"W_1",kind:"var",code_lines:[..]}, \
 {text:"x",kind:"var"}, {text:"+",kind:"op"}, {text:"b_1",kind:"var",code_lines:[..]}, {text:")",kind:"fn"}]. \
-Also fill equation.latex with the same expression as one LaTeX string when representation is "latex".
+Also fill equation.latex with the same expression as one LaTeX string when representation is "latex". Every \
+token's text MUST be valid standalone LaTeX -- never raw Python (no "return", no bare identifiers with \
+unescaped underscores or parentheses copied verbatim from source). A function/variable name from code \
+becomes \\text{name} with underscores escaped (\\text{matrix\\_log\\_se3}), never a naked code fragment; \
+a python keyword like "return" is never itself a token -- it just doesn't appear in the formula at all.
 - shape entries are symbolic (e.g. "B", "6", "5") when the batch dimension is runtime-only; never \
 invent a concrete batch size.
 - The context includes a STATICALLY VERIFIED SHAPES section produced by deterministic AST analysis \

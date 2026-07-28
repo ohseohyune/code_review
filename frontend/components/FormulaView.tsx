@@ -3,11 +3,17 @@ import katex from "katex";
 import type { MathToken } from "@/lib/types";
 import { useHighlight } from "@/lib/highlight-context";
 
+function escapeHtml(text: string): string {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
 function renderTex(text: string): string {
   try {
     return katex.renderToString(text, { throwOnError: false, output: "html" });
   } catch {
-    return text;
+    // Malformed LaTeX from the model (e.g. raw code text) -- show it as plain,
+    // escaped text instead of throwing or injecting unescaped HTML.
+    return escapeHtml(text);
   }
 }
 
