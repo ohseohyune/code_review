@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
+import TopNav from "@/components/TopNav";
 import "./globals.css";
 
 const jbMono = JetBrains_Mono({
@@ -26,6 +27,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full bg-white text-[#1D1D1F]" style={{ fontFamily: "Pretendard, -apple-system, system-ui, sans-serif" }}>
+        <TopNav />
         {children}
       </body>
     </html>

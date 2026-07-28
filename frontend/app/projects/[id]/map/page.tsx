@@ -1,7 +1,7 @@
 "use client";
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
-import { api } from "@/lib/api";
+import { api, ApiError } from "@/lib/api";
 import type { ProjectGraph } from "@/lib/types";
 
 const FILTERS = ["전체", "함수 호출", "데이터 흐름", "Import 관계"] as const;
@@ -17,10 +17,14 @@ export default function ProjectMapPage({ params }: { params: Promise<{ id: strin
   const { id } = use(params);
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("전체");
   const [graph, setGraph] = useState<ProjectGraph | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setGraph(null);
-    api.getGraph(id, filter).then(setGraph);
+    setError(null);
+    api.getGraph(id, filter).then(setGraph).catch((e) => {
+      setError(e instanceof ApiError ? e.message : "그래프를 불러오지 못했습니다.");
+    });
   }, [id, filter]);
 
   const outEdges = (nodeId: string) => graph?.edges.filter((e) => e.source === nodeId) ?? [];
@@ -54,7 +58,14 @@ export default function ProjectMapPage({ params }: { params: Promise<{ id: strin
         </div>
       </div>
 
-      {!graph ? (
+      {error ? (
+        <div className="mx-6 mt-6 rounded-2xl bg-[rgba(255,59,48,.06)] p-5" style={{ border: "0.5px solid rgba(255,59,48,.3)" }}>
+          <p className="text-[13px] text-[#D70015]">{error}</p>
+          <Link href="/upload" className="mt-3 inline-flex h-8 items-center rounded-full bg-[#007AFF] px-4 text-[12.5px] font-semibold text-white">
+            다시 업로드
+          </Link>
+        </div>
+      ) : !graph ? (
         <div className="p-10 text-[13px] text-[rgba(60,60,67,.5)]">불러오는 중…</div>
       ) : (
         <div className="flex gap-4 p-6">

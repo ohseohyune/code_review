@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.models import ProjectRow, FunctionRow, ClassRow
-from app.store import persist_project
+from app.store import persist_project, require_root_dir
 from app.schemas import ProjectSummary, ProjectTree, FunctionListItem, ClassListItem, ProjectGraph, Issue
 from app.project_summary import build_project_summary
 from app.analysis.ast_parser import analyze_project
@@ -253,7 +253,7 @@ def get_graph(project_id: str, filter: str = "전체", db: Session = Depends(get
     project = db.get(ProjectRow, project_id)
     if not project:
         raise HTTPException(404, "project not found")
-    analysis = analyze_project(Path(project.root_dir))
+    analysis = analyze_project(require_root_dir(project.root_dir))
 
     if filter == "Import 관계":
         nodes, edges, cycles = build_import_graph(analysis)

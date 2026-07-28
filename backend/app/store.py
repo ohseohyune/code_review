@@ -3,12 +3,24 @@ import os
 import uuid
 from pathlib import Path
 
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.analysis.ast_parser import analyze_project, list_scannable_files, ProjectAnalysis
 from app.analysis.llm import summarize_project
 from app.analysis.secrets import scan_secrets
 from app.models import ProjectRow, ClassRow, FunctionRow
+
+
+def require_root_dir(root_dir: str) -> Path:
+    """Every re-analysis (graph, AI call) re-reads the project from disk rather than
+    trusting a DB cache -- if the upload dir is gone (deleted, moved), fail loudly
+    with an actionable message instead of silently analyzing an empty directory.
+    """
+    path = Path(root_dir)
+    if not path.exists():
+        raise HTTPException(410, "프로젝트 파일을 찾을 수 없습니다. 프로젝트를 다시 업로드해 주세요.")
+    return path
 
 
 def persist_project(db: Session, name: str, root_dir: Path) -> ProjectRow:
