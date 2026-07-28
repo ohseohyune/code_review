@@ -1,0 +1,1851 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" />
+<style>
+  html, body { margin:0; padding:0; background:#F2F2F7; }
+  body { font-family:-apple-system,"SF Pro Text","Pretendard Variable",Pretendard,system-ui,sans-serif; -webkit-font-smoothing:antialiased; color:#000; }
+  a { color:#007AFF; text-decoration:none; }
+  a:hover { color:#0062CC; }
+  ::selection { background:rgba(0,122,255,.18); }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(8px);} to { opacity:1; transform:none;} }
+  @keyframes pulseDot { 0%,100% { opacity:.35;} 50% { opacity:1;} }
+</style>
+</helmet>
+
+<div style="min-width:1680px;min-height:100vh;background:#F2F2F7;position:relative">
+
+  <!-- ============ LANDING ============ -->
+  <sc-if value="{{ isLanding }}">
+  <div style="min-height:100vh;background:linear-gradient(180deg,#FFFFFF 0%,#F2F2F7 100%)">
+    <div style="height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;border-bottom:0.5px solid rgba(84,84,86,.2);position:sticky;top:0;background:rgba(255,255,255,.72);backdrop-filter:saturate(180%) blur(20px);z-index:5">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:22px;height:22px;border-radius:6px;background:#007AFF;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace">∑</div>
+        <div style="font-size:15px;font-weight:600;letter-spacing:-0.2px">Code to Math <span style="color:rgba(60,60,67,.6);font-weight:500">AI Teacher</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button onClick="{{ goDemo }}" style="height:32px;padding:0 14px;border:none;border-radius:999px;background:rgba(120,120,128,.12);color:#000;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit">데모 프로젝트</button>
+        <button onClick="{{ goUpload }}" style="height:32px;padding:0 16px;border:none;border-radius:999px;background:#007AFF;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">새 프로젝트</button>
+      </div>
+    </div>
+
+    <div style="max-width:1080px;margin:0 auto;padding:96px 40px 40px;text-align:center">
+      <div style="display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 12px;border-radius:999px;background:rgba(0,122,255,.1);color:#007AFF;font-size:12px;font-weight:600;margin-bottom:28px">Python 연구 코드 · PyTorch · 제어 · 강화학습</div>
+      <h1 style="font-size:56px;line-height:1.08;letter-spacing:-1.6px;font-weight:700;margin:0 0 20px">코드를 읽지 말고,<br />코드를 <span style="color:#007AFF">배우세요</span>.</h1>
+      <p style="font-size:19px;line-height:1.5;color:rgba(60,60,67,.6);margin:0 auto 36px;max-width:620px;text-wrap:pretty">함수의 입력·출력, 텐서 shape, 수식, 데이터 흐름으로 코드를 번역합니다. 리뷰는 이해한 다음입니다.</p>
+      <div style="display:flex;gap:10px;justify-content:center;margin-bottom:14px">
+        <button onClick="{{ goUpload }}" style="height:44px;padding:0 24px;border:none;border-radius:12px;background:#007AFF;color:#fff;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 1px 3px rgba(0,0,0,.08)">Python 파일 업로드</button>
+        <button onClick="{{ goDemo }}" style="height:44px;padding:0 24px;border:0.5px solid rgba(84,84,86,.24);border-radius:12px;background:#fff;color:#000;font-size:16px;font-weight:500;cursor:pointer;font-family:inherit">데모로 둘러보기</button>
+      </div>
+      <div style="font-size:12px;color:rgba(60,60,67,.45)">업로드한 코드는 실행되지 않으며 모델 학습에 사용되지 않습니다.</div>
+    </div>
+
+    <div style="max-width:1160px;margin:0 auto;padding:0 40px 40px">
+      <div style="background:#fff;border-radius:20px;box-shadow:0 12px 48px rgba(0,0,0,.10);overflow:hidden;border:0.5px solid rgba(84,84,86,.14)">
+        <div style="height:36px;background:#F7F7FA;border-bottom:0.5px solid rgba(84,84,86,.14);display:flex;align-items:center;gap:6px;padding:0 14px">
+          <div style="width:10px;height:10px;border-radius:50%;background:#FF5F57"></div>
+          <div style="width:10px;height:10px;border-radius:50%;background:#FEBC2E"></div>
+          <div style="width:10px;height:10px;border-radius:50%;background:#28C840"></div>
+          <div style="flex:1;text-align:center;font-size:11px;color:rgba(60,60,67,.5);font-weight:500">quadruped-rl-mpc — AdaptiveCostActor.forward()</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0">
+          <div style="padding:28px 26px;border-right:0.5px solid rgba(84,84,86,.14);background:#FCFCFD">
+            <div style="font-size:11px;font-weight:600;color:rgba(60,60,67,.5);letter-spacing:.4px;margin-bottom:12px">CODE</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:2;color:#1D1D1F">
+              <div><span style="color:#AF52DE">def</span> <span style="color:#0B7285">forward</span>(<span style="color:#000">self, observation</span>):</div>
+              <div style="background:rgba(255,204,0,.22);border-radius:4px;padding:0 4px;margin:0 -4px">    h = torch.<span style="color:#0B7285">tanh</span>(self.fc1(observation))</div>
+              <div>    raw = self.fc2(h)</div>
+              <div style="background:rgba(0,122,255,.10);border-radius:4px;padding:0 4px;margin:0 -4px">    residual = raw.view(-<span style="color:#0F5FDB">1</span>, <span style="color:#0F5FDB">6</span>, <span style="color:#0F5FDB">5</span>)</div>
+              <div>    <span style="color:#AF52DE">return</span> torch.tanh(residual) * self.scale</div>
+            </div>
+          </div>
+          <div style="padding:28px 26px;background:#fff">
+            <div style="font-size:11px;font-weight:600;color:rgba(60,60,67,.5);letter-spacing:.4px;margin-bottom:12px">MATH</div>
+            <div style="font-family:Georgia,'Times New Roman',serif;font-size:24px;line-height:2;color:#1D1D1F;font-style:italic">
+              <div><span style="background:rgba(255,204,0,.22);border-radius:4px;padding:2px 4px">h = tanh(W₁o + b₁)</span></div>
+              <div style="margin-top:6px"><span style="background:rgba(0,122,255,.10);border-radius:4px;padding:2px 4px">Δw = s · tanh(reshape(W₂h + b₂))</span></div>
+            </div>
+            <div style="margin-top:18px;display:flex;flex-wrap:wrap;gap:6px">
+              <span style="font-size:11px;font-family:'JetBrains Mono',monospace;background:rgba(120,120,128,.10);border-radius:6px;padding:4px 8px;color:rgba(60,60,67,.75)">observation ↔ o</span>
+              <span style="font-size:11px;font-family:'JetBrains Mono',monospace;background:rgba(120,120,128,.10);border-radius:6px;padding:4px 8px;color:rgba(60,60,67,.75)">residual ↔ Δw</span>
+              <span style="font-size:11px;font-family:'JetBrains Mono',monospace;background:rgba(120,120,128,.10);border-radius:6px;padding:4px 8px;color:rgba(60,60,67,.75)">[B, 6, 5]</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="max-width:1160px;margin:0 auto;padding:36px 40px 100px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+      <div style="background:#fff;border-radius:14px;padding:20px;border:0.5px solid rgba(84,84,86,.12)">
+        <div style="font-size:22px;margin-bottom:10px">①</div>
+        <div style="font-size:15px;font-weight:600;margin-bottom:6px">어디부터 읽을지 알려줍니다</div>
+        <div style="font-size:13px;line-height:1.5;color:rgba(60,60,67,.6)">진입점 후보와 추천 학습 순서를 먼저 제시합니다.</div>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:20px;border:0.5px solid rgba(84,84,86,.12)">
+        <div style="font-size:22px;margin-bottom:10px">②</div>
+        <div style="font-size:15px;font-weight:600;margin-bottom:6px">코드를 수식으로 번역합니다</div>
+        <div style="font-size:13px;line-height:1.5;color:rgba(60,60,67,.6)">기호와 코드 변수가 서로 강조되며 연결됩니다.</div>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:20px;border:0.5px solid rgba(84,84,86,.12)">
+        <div style="font-size:22px;margin-bottom:10px">③</div>
+        <div style="font-size:15px;font-weight:600;margin-bottom:6px">Shape와 흐름을 추적합니다</div>
+        <div style="font-size:13px;line-height:1.5;color:rgba(60,60,67,.6)">차원이 어디서 왜 바뀌는지 단계별로 보여줍니다.</div>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:20px;border:0.5px solid rgba(84,84,86,.12)">
+        <div style="font-size:22px;margin-bottom:10px">④</div>
+        <div style="font-size:15px;font-weight:600;margin-bottom:6px">추론과 사실을 구분합니다</div>
+        <div style="font-size:13px;line-height:1.5;color:rgba(60,60,67,.6)">모든 설명에 확실성과 근거 코드 위치를 표시합니다.</div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ DASHBOARD ============ -->
+  <sc-if value="{{ isDashboard }}">
+  <div style="min-height:100vh">
+    <div style="height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(255,255,255,.75);backdrop-filter:saturate(180%) blur(20px);border-bottom:0.5px solid rgba(84,84,86,.2);position:sticky;top:0;z-index:5">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:22px;height:22px;border-radius:6px;background:#007AFF;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace">∑</div>
+        <div style="font-size:15px;font-weight:600">프로젝트</div>
+      </div>
+      <button onClick="{{ goUpload }}" style="height:30px;padding:0 14px;border:none;border-radius:999px;background:#007AFF;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">새 프로젝트</button>
+    </div>
+    <div style="max-width:1100px;margin:0 auto;padding:36px 24px">
+      <h2 style="font-size:28px;font-weight:700;letter-spacing:-.6px;margin:0 0 4px">최근 프로젝트</h2>
+      <div style="font-size:14px;color:rgba(60,60,67,.6);margin-bottom:24px">분석이 끝난 프로젝트부터 학습을 이어가세요.</div>
+      <div style="background:#fff;border-radius:14px;border:0.5px solid rgba(84,84,86,.12);overflow:hidden">
+        <sc-for list="{{ projects }}" as="p" hint-placeholder-count="4">
+          <div onClick="{{ p.open }}" style="display:flex;align-items:center;gap:16px;padding:16px 18px;border-bottom:0.5px solid rgba(84,84,86,.14);cursor:pointer" style-hover="background:rgba(120,120,128,.06)">
+            <div style="width:36px;height:36px;border-radius:10px;background:{{ p.tintBg }};color:{{ p.tint }};display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;font-family:'JetBrains Mono',monospace">{{ p.initial }}</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:15px;font-weight:600;margin-bottom:2px">{{ p.name }}</div>
+              <div style="font-size:12.5px;color:rgba(60,60,67,.6)">{{ p.meta }}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;height:24px;padding:0 10px;border-radius:999px;background:{{ p.statusBg }};color:{{ p.statusFg }};font-size:12px;font-weight:600">{{ p.status }}</div>
+            <div style="color:rgba(60,60,67,.3);font-size:18px">›</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ UPLOAD ============ -->
+  <sc-if value="{{ isUpload }}">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px">
+    <div style="width:720px;background:#fff;border-radius:20px;border:0.5px solid rgba(84,84,86,.12);box-shadow:0 12px 48px rgba(0,0,0,.08);overflow:hidden">
+      <div style="padding:26px 28px 0">
+        <div style="font-size:22px;font-weight:700;letter-spacing:-.4px;margin-bottom:4px">새 프로젝트</div>
+        <div style="font-size:13.5px;color:rgba(60,60,67,.6)">코드는 서버에서 실행되지 않습니다. 정적 분석만 수행합니다.</div>
+      </div>
+      <div style="padding:20px 28px 0;display:flex;gap:4px">
+        <sc-for list="{{ uploadTabs }}" as="t" hint-placeholder-count="3">
+          <button onClick="{{ t.select }}" style="flex:1;height:32px;border:none;border-radius:9px;background:{{ t.bg }};color:{{ t.fg }};font-size:13px;font-weight:{{ t.weight }};cursor:pointer;font-family:inherit">{{ t.label }}</button>
+        </sc-for>
+      </div>
+      <div style="padding:18px 28px 0">
+        <sc-if value="{{ uploadIsFile }}" hint-placeholder-val="{{ true }}">
+          <div onClick="{{ pickFiles }}" style="border:1.5px dashed rgba(0,122,255,.4);border-radius:14px;background:rgba(0,122,255,.04);padding:34px;text-align:center;cursor:pointer">
+            <div style="font-size:30px;margin-bottom:10px;color:#007AFF">⬆</div>
+            <div style="font-size:15px;font-weight:600;margin-bottom:4px">.py 파일 또는 .zip을 여기에 놓으세요</div>
+            <div style="font-size:12.5px;color:rgba(60,60,67,.6)">최대 200개 파일 · 50MB · 암호화된 ZIP은 지원하지 않습니다</div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ uploadIsGit }}">
+          <div style="border:0.5px solid rgba(84,84,86,.18);border-radius:14px;padding:18px">
+            <div style="font-size:12px;font-weight:600;color:rgba(60,60,67,.6);margin-bottom:8px">Public repository URL</div>
+            <div style="display:flex;gap:8px">
+              <div style="flex:1;height:36px;border-radius:10px;background:rgba(120,120,128,.08);display:flex;align-items:center;padding:0 12px;font-size:13.5px;font-family:'JetBrains Mono',monospace;color:rgba(60,60,67,.75)">github.com/lab/quadruped-rl-mpc</div>
+              <button onClick="{{ pickFiles }}" style="height:36px;padding:0 16px;border:none;border-radius:10px;background:rgba(120,120,128,.12);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">확인</button>
+            </div>
+            <div style="font-size:12px;color:rgba(60,60,67,.5);margin-top:10px">private repository는 MVP에서 지원하지 않습니다.</div>
+          </div>
+        </sc-if>
+      </div>
+      <sc-if value="{{ hasFiles }}">
+        <div style="padding:16px 28px 0">
+          <div style="border-radius:12px;background:rgba(120,120,128,.06);padding:12px 14px">
+            <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:rgba(60,60,67,.6);margin-bottom:8px"><span>선택된 파일 14개</span><span style="color:#FF9500">1개 제외됨</span></div>
+            <sc-for list="{{ pickedFiles }}" as="f" hint-placeholder-count="4">
+              <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-family:'JetBrains Mono',monospace;padding:3px 0;color:{{ f.color }}"><span>{{ f.mark }}</span><span>{{ f.path }}</span><span style="color:rgba(60,60,67,.4);font-size:11px">{{ f.note }}</span></div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+      <div style="padding:20px 28px 24px;display:flex;justify-content:space-between;align-items:center">
+        <button onClick="{{ goLanding }}" style="height:36px;padding:0 14px;border:none;background:none;color:#007AFF;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit">취소</button>
+        <button onClick="{{ startAnalysis }}" style="height:38px;padding:0 20px;border:none;border-radius:11px;background:{{ analyzeBg }};color:#fff;font-size:14.5px;font-weight:600;cursor:pointer;font-family:inherit">분석 시작</button>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ PROGRESS ============ -->
+  <sc-if value="{{ isProgress }}">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center">
+    <div style="width:560px">
+      <div style="text-align:center;margin-bottom:28px">
+        <div style="font-size:13px;font-weight:600;color:#007AFF;margin-bottom:6px">quadruped-rl-mpc</div>
+        <div style="font-size:24px;font-weight:700;letter-spacing:-.4px">프로젝트를 분석하고 있습니다</div>
+        <div style="font-size:13.5px;color:rgba(60,60,67,.6);margin-top:6px">완료된 파일부터 먼저 열어볼 수 있습니다.</div>
+      </div>
+      <div style="background:#fff;border-radius:16px;border:0.5px solid rgba(84,84,86,.12);padding:8px 6px">
+        <sc-for list="{{ steps }}" as="s" hint-placeholder-count="6">
+          <div style="display:flex;align-items:center;gap:12px;padding:11px 14px">
+            <div style="width:20px;height:20px;border-radius:50%;background:{{ s.dotBg }};color:{{ s.dotFg }};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;{{ s.dotAnim }}">{{ s.mark }}</div>
+            <div style="flex:1;font-size:14px;font-weight:{{ s.weight }};color:{{ s.color }}">{{ s.label }}</div>
+            <div style="font-size:12px;color:rgba(60,60,67,.45);font-family:'JetBrains Mono',monospace">{{ s.detail }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="margin-top:18px;height:4px;border-radius:2px;background:rgba(120,120,128,.16);overflow:hidden">
+        <div style="height:100%;background:#007AFF;border-radius:2px;transition:width .5s ease;width:{{ progressPct }}"></div>
+      </div>
+      <div style="text-align:center;margin-top:18px">
+        <button onClick="{{ goOverview }}" style="height:34px;padding:0 16px;border:0.5px solid rgba(84,84,86,.2);border-radius:10px;background:#fff;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit">완료된 부분 먼저 보기</button>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ OVERVIEW ============ -->
+  <sc-if value="{{ isOverview }}">
+  <div style="min-height:100vh">
+    <div style="height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(255,255,255,.75);backdrop-filter:saturate(180%) blur(20px);border-bottom:0.5px solid rgba(84,84,86,.2);position:sticky;top:0;z-index:5">
+      <div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600"><span onClick="{{ goDashboard }}" style="color:#007AFF;cursor:pointer">프로젝트</span><span style="color:rgba(60,60,67,.3)">/</span><span>quadruped-rl-mpc</span></div>
+      <div style="display:flex;gap:8px">
+        <button onClick="{{ goMap }}" style="height:30px;padding:0 13px;border:0.5px solid rgba(84,84,86,.2);border-radius:999px;background:#fff;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit">프로젝트 지도</button>
+        <button onClick="{{ goWorkspace }}" style="height:30px;padding:0 14px;border:none;border-radius:999px;background:#007AFF;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">추천 순서대로 학습 시작</button>
+      </div>
+    </div>
+
+    <div style="max-width:1140px;margin:0 auto;padding:32px 24px 80px">
+      <div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:22px">
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:600;color:#34C759;margin-bottom:8px">✓ 분석 완료 · 확실성 높음</div>
+          <h1 style="font-size:30px;font-weight:700;letter-spacing:-.7px;margin:0 0 10px;text-wrap:pretty">사족보행 로봇의 접촉 제어를 위해, 학습된 정책이 MPC의 cost weight를 조정하는 프로젝트입니다.</h1>
+          <p style="font-size:15px;line-height:1.6;color:rgba(60,60,67,.6);margin:0;max-width:760px;text-wrap:pretty">관측 벡터를 구성해 Actor 네트워크에 넣고, 그 출력으로 MPC의 비용 가중치를 조정한 뒤, 최적 제어 입력을 계산합니다. 학습은 PPO로 이루어집니다.</p>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:26px">
+        <sc-for list="{{ overviewStats }}" as="s" hint-placeholder-count="5">
+          <div style="background:#fff;border-radius:14px;border:0.5px solid rgba(84,84,86,.12);padding:16px">
+            <div style="font-size:26px;font-weight:700;letter-spacing:-.6px;margin-bottom:2px;color:{{ s.color }};font-family:'JetBrains Mono',monospace">{{ s.value }}</div>
+            <div style="font-size:12.5px;color:rgba(60,60,67,.6)">{{ s.label }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.35fr 1fr;gap:16px">
+        <div style="background:#fff;border-radius:16px;border:0.5px solid rgba(84,84,86,.12);padding:20px 22px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+            <div style="font-size:17px;font-weight:700;letter-spacing:-.3px">추천 학습 순서</div>
+            <div style="font-size:12px;color:rgba(60,60,67,.5)">전체 약 22분</div>
+          </div>
+          <div style="font-size:13px;color:rgba(60,60,67,.6);margin-bottom:16px">전체 → 부분 순서로, 데이터가 흐르는 방향을 따라갑니다.</div>
+          <sc-for list="{{ learningPath }}" as="s" hint-placeholder-count="5">
+            <div onClick="{{ s.open }}" style="display:flex;gap:14px;padding:13px 12px;border-radius:12px;cursor:pointer;border:0.5px solid {{ s.border }};background:{{ s.bg }};margin-bottom:8px" style-hover="border-color:rgba(0,122,255,.45)">
+              <div style="width:24px;height:24px;border-radius:50%;flex-shrink:0;background:{{ s.numBg }};color:{{ s.numFg }};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">{{ s.num }}</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14px;font-weight:600;font-family:'JetBrains Mono',monospace;margin-bottom:3px">{{ s.qual }}</div>
+                <div style="font-size:12.5px;line-height:1.5;color:rgba(60,60,67,.6);text-wrap:pretty">{{ s.why }}</div>
+              </div>
+              <div style="font-size:11.5px;color:rgba(60,60,67,.45);white-space:nowrap;padding-top:2px">{{ s.time }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div style="background:#fff;border-radius:16px;border:0.5px solid rgba(84,84,86,.12);padding:20px 22px">
+            <div style="font-size:17px;font-weight:700;letter-spacing:-.3px;margin-bottom:14px">진입점 후보</div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:rgba(52,199,89,.1);margin-bottom:8px">
+              <div style="font-size:13px;font-family:'JetBrains Mono',monospace;font-weight:600;flex:1">main.py / run()</div>
+              <div style="font-size:11px;font-weight:600;color:#248A3D">__main__ 확인</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:rgba(120,120,128,.08)">
+              <div style="font-size:13px;font-family:'JetBrains Mono',monospace;font-weight:600;flex:1">train/ppo.py / main()</div>
+              <div style="font-size:11px;font-weight:600;color:rgba(60,60,67,.55)">CLI entry</div>
+            </div>
+          </div>
+
+          <div style="background:#fff;border-radius:16px;border:0.5px solid rgba(84,84,86,.12);padding:20px 22px">
+            <div style="font-size:17px;font-weight:700;letter-spacing:-.3px;margin-bottom:6px">전체 데이터 흐름</div>
+            <div style="font-size:12.5px;color:rgba(60,60,67,.6);margin-bottom:14px">먼저 전체를 보고, 그 다음 함수로 내려갑니다.</div>
+            <sc-for list="{{ globalFlow }}" as="n" hint-placeholder-count="5">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:2px">
+                <div style="width:8px;height:8px;border-radius:50%;background:{{ n.dot }};flex-shrink:0"></div>
+                <div style="font-size:12.5px;font-family:'JetBrains Mono',monospace;font-weight:600">{{ n.name }}</div>
+                <div style="font-size:11.5px;color:rgba(60,60,67,.5);font-family:'JetBrains Mono',monospace">{{ n.shape }}</div>
+              </div>
+              <div style="width:1px;height:14px;background:rgba(84,84,86,.25);margin-left:3.5px"></div>
+            </sc-for>
+            <div style="font-size:12px;color:rgba(60,60,67,.45);margin-top:2px">control_sequence → 로봇 명령</div>
+          </div>
+
+          <div style="background:rgba(255,149,0,.08);border-radius:16px;border:0.5px solid rgba(255,149,0,.25);padding:16px 18px">
+            <div style="font-size:13.5px;font-weight:700;color:#C93400;margin-bottom:6px">분석 주의사항</div>
+            <div style="font-size:12.5px;line-height:1.55;color:rgba(60,60,67,.75)">14개 중 13개 파일을 분석했습니다. <span style="font-family:'JetBrains Mono',monospace">legacy_controller.py</span>는 143줄 SyntaxError로 제외되었습니다. batch 크기 B는 실행해야 확인할 수 있습니다.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ WORKSPACE ============ -->
+  <sc-if value="{{ isWorkspace }}">
+  <div style="height:100vh;display:flex;flex-direction:column;overflow:hidden;background:#F2F2F7">
+    <div style="height:48px;flex-shrink:0;display:flex;align-items:center;gap:14px;padding:0 16px;background:rgba(255,255,255,.8);backdrop-filter:saturate(180%) blur(20px);border-bottom:0.5px solid rgba(84,84,86,.2);z-index:6">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:20px;height:20px;border-radius:6px;background:#007AFF;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace">∑</div>
+        <span onClick="{{ goOverview }}" style="font-size:13.5px;font-weight:600;color:#007AFF;cursor:pointer">quadruped-rl-mpc</span>
+        <span style="color:rgba(60,60,67,.3)">/</span>
+        <span style="font-size:13.5px;font-weight:600;font-family:'JetBrains Mono',monospace">{{ fnFile }}</span>
+      </div>
+      <div style="flex:1"></div>
+      <div style="display:flex;background:rgba(120,120,128,.10);border-radius:9px;padding:2px;margin-right:4px">
+        <sc-for list="{{ topTabs }}" as="t" hint-placeholder-count="5">
+          <button onClick="{{ t.go }}" style="height:26px;padding:0 11px;border:none;border-radius:7px;background:{{ t.bg }};box-shadow:{{ t.shadow }};font-size:12.5px;font-weight:{{ t.weight }};color:{{ t.fg }};cursor:pointer;font-family:inherit">{{ t.label }}</button>
+        </sc-for>
+      </div>
+      <div style="display:flex;background:rgba(120,120,128,.12);border-radius:9px;padding:2px">
+        <button onClick="{{ setLearning }}" style="height:26px;padding:0 14px;border:none;border-radius:7px;background:{{ learnBg }};box-shadow:{{ learnShadow }};font-size:12.5px;font-weight:{{ learnWeight }};cursor:pointer;font-family:inherit;color:#000">Learning</button>
+        <button onClick="{{ setExpert }}" style="height:26px;padding:0 14px;border:none;border-radius:7px;background:{{ expertBg }};box-shadow:{{ expertShadow }};font-size:12.5px;font-weight:{{ expertWeight }};cursor:pointer;font-family:inherit;color:#000">Expert</button>
+      </div>
+    </div>
+
+    <div style="flex:1;display:flex;min-height:0">
+      <!-- LEFT -->
+      <div style="width:264px;flex-shrink:0;background:#FAFAFC;border-right:0.5px solid rgba(84,84,86,.18);display:flex;flex-direction:column;min-height:0">
+        <div style="padding:10px 12px 8px">
+          <div style="height:30px;border-radius:9px;background:rgba(120,120,128,.10);display:flex;align-items:center;gap:6px;padding:0 10px;color:rgba(60,60,67,.5);font-size:13px">⌕ <span>함수·파일 검색</span></div>
+        </div>
+        <div style="padding:0 10px 8px;display:flex;gap:3px">
+          <sc-for list="{{ navTabs }}" as="t" hint-placeholder-count="3">
+            <button onClick="{{ t.select }}" style="flex:1;height:26px;border:none;border-radius:7px;background:{{ t.bg }};color:{{ t.fg }};font-size:12px;font-weight:{{ t.weight }};cursor:pointer;font-family:inherit">{{ t.label }}</button>
+          </sc-for>
+        </div>
+        <div style="flex:1;overflow-y:auto;padding:2px 8px 16px">
+          <sc-for list="{{ navItems }}" as="it" hint-placeholder-count="10">
+            <div onClick="{{ it.click }}" style="display:flex;align-items:center;gap:7px;padding:5px 8px;border-radius:8px;cursor:{{ it.cursor }};background:{{ it.bg }};margin-bottom:1px;margin-left:{{ it.indent }}" style-hover="background:rgba(120,120,128,.10)">
+              <div style="width:14px;text-align:center;font-size:10px;color:{{ it.iconColor }};font-family:'JetBrains Mono',monospace;font-weight:700">{{ it.icon }}</div>
+              <div style="flex:1;min-width:0;font-size:12.5px;font-weight:{{ it.weight }};color:{{ it.color }};font-family:{{ it.font }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ it.label }}</div>
+              <div style="font-size:10px;color:{{ it.badgeFg }};font-weight:700">{{ it.badge }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="border-top:0.5px solid rgba(84,84,86,.18);padding:12px 14px;background:#fff">
+          <div style="font-size:11px;font-weight:700;color:rgba(60,60,67,.5);letter-spacing:.3px;margin-bottom:8px">학습 진행률</div>
+          <div style="height:5px;border-radius:3px;background:rgba(120,120,128,.16);overflow:hidden;margin-bottom:6px"><div style="height:100%;background:#34C759;width:{{ learnPct }};transition:width .3s"></div></div>
+          <div style="font-size:11.5px;color:rgba(60,60,67,.6)">{{ learnDone }} / {{ learnTotal }} 함수 이해 완료</div>
+        </div>
+      </div>
+
+      <!-- CENTER -->
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;background:#fff">
+        <div style="height:36px;flex-shrink:0;display:flex;align-items:center;gap:8px;padding:0 14px;border-bottom:0.5px solid rgba(84,84,86,.14);background:#FCFCFD">
+          <div style="font-size:12px;font-family:'JetBrains Mono',monospace;font-weight:600">{{ fnQual }}</div>
+          <div style="font-size:11px;color:rgba(60,60,67,.45);font-family:'JetBrains Mono',monospace">{{ fnLineRange }}</div>
+          <div style="flex:1"></div>
+          <sc-if value="{{ hasHl }}">
+            <div style="font-size:11px;font-weight:600;color:#007AFF;background:rgba(0,122,255,.1);border-radius:6px;padding:3px 8px">{{ hlLabel }}</div>
+          </sc-if>
+        </div>
+        <div style="flex:1;overflow-y:auto;padding:12px 0 40px">
+          <sc-for list="{{ codeLines }}" as="ln" hint-placeholder-count="16">
+            <div onMouseEnter="{{ ln.enter }}" onMouseLeave="{{ clearHl }}" style="display:flex;align-items:flex-start;background:{{ ln.bg }};border-left:2px solid {{ ln.bar }};padding:0 14px 0 12px;cursor:default">
+              <div style="width:30px;flex-shrink:0;text-align:right;padding-right:14px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:21px;color:rgba(60,60,67,.32);user-select:none">{{ ln.n }}</div>
+              <div style="flex:1;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:21px;white-space:pre;color:#1D1D1F"><sc-for list="{{ ln.spans }}" as="sp" hint-placeholder-count="3"><span style="color:{{ sp.c }};font-style:{{ sp.i }}">{{ sp.t }}</span></sc-for></div>
+              <div style="width:120px;flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:21px;color:{{ ln.annColor }};text-align:right;user-select:none">{{ ln.ann }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div style="width:678px;flex-shrink:0;background:#F2F2F7;border-left:0.5px solid rgba(84,84,86,.18);display:flex;flex-direction:column;min-height:0">
+        <div style="padding:12px 16px 10px;background:#fff;border-bottom:0.5px solid rgba(84,84,86,.14)">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+            <div style="font-size:11px;font-weight:700;letter-spacing:.4px;color:#007AFF">AI TEACHER</div>
+            <div style="flex:1"></div>
+            <div style="font-size:11.5px;color:rgba(60,60,67,.5)">{{ stepCounter }}</div>
+          </div>
+          <div style="display:flex;gap:4px">
+            <sc-for list="{{ stepDots }}" as="d" hint-placeholder-count="6">
+              <div onClick="{{ d.go }}" style="flex:1;cursor:pointer;padding-top:4px">
+                <div style="height:3px;border-radius:2px;background:{{ d.bar }};margin-bottom:5px"></div>
+                <div style="font-size:10.5px;font-weight:{{ d.weight }};color:{{ d.color }};text-align:center">{{ d.label }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="flex:1;overflow-y:auto;padding:14px 14px 20px">
+          <sc-for list="{{ cards }}" as="c" hint-placeholder-count="1">
+            <div style="background:#fff;border-radius:16px;border:0.5px solid rgba(84,84,86,.12);padding:16px 16px 18px;margin-bottom:12px;animation:fadeUp .22s ease">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+                <div style="font-size:11px;font-weight:700;letter-spacing:.4px;color:rgba(60,60,67,.5)">{{ c.kicker }}</div>
+                <div style="flex:1"></div>
+                <div onMouseEnter="{{ c.tipOn }}" onMouseLeave="{{ tipOff }}" style="display:flex;align-items:center;gap:5px;height:20px;padding:0 8px;border-radius:999px;background:{{ c.certBg }};cursor:help">
+                  <div style="width:6px;height:6px;border-radius:50%;background:{{ c.certDot }}"></div>
+                  <div style="font-size:10.5px;font-weight:600;color:{{ c.certFg }}">{{ c.cert }}</div>
+                </div>
+              </div>
+              <sc-if value="{{ c.tipOpen }}">
+                <div style="background:rgba(120,120,128,.09);border-radius:10px;padding:9px 11px;margin:-4px 0 12px;font-size:11.5px;line-height:1.5;color:rgba(60,60,67,.8)">{{ c.tipText }}</div>
+              </sc-if>
+
+              <sc-if value="{{ c.isOverview }}">
+                <div style="font-size:17px;font-weight:700;line-height:1.4;letter-spacing:-.3px;margin-bottom:12px;text-wrap:pretty">{{ c.oneLine }}</div>
+                <div style="border-radius:12px;background:rgba(120,120,128,.07);padding:12px 14px;margin-bottom:12px">
+                  <div style="font-size:11px;font-weight:700;color:rgba(60,60,67,.5);margin-bottom:6px">시스템 안에서의 위치</div>
+                  <div style="font-size:13px;line-height:1.55;color:rgba(60,60,67,.85);text-wrap:pretty">{{ c.systemRole }}</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                  <sc-for list="{{ c.chain }}" as="n" hint-placeholder-count="5">
+                    <div style="font-size:11px;font-family:'JetBrains Mono',monospace;font-weight:600;padding:4px 8px;border-radius:7px;background:{{ n.bg }};color:{{ n.fg }}">{{ n.name }}</div>
+                    <div style="color:rgba(60,60,67,.3);font-size:11px">{{ n.arrow }}</div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ c.isIO }}">
+                <div style="font-size:11px;font-weight:700;color:#34C759;margin-bottom:8px">INPUT</div>
+                <sc-for list="{{ c.inputs }}" as="v" hint-placeholder-count="2">
+                  <div onMouseEnter="{{ v.enter }}" onMouseLeave="{{ clearHl }}" style="border:0.5px solid {{ v.border }};border-radius:12px;padding:12px 13px;margin-bottom:8px;background:{{ v.bg }};cursor:default">
+                    <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">
+                      <div style="font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace">{{ v.name }}</div>
+                      <div style="font-size:11.5px;color:rgba(60,60,67,.5);font-family:'JetBrains Mono',monospace">{{ v.type }}</div>
+                      <div style="flex:1"></div>
+                      <div style="font-size:11.5px;font-weight:700;font-family:'JetBrains Mono',monospace;color:#007AFF;background:rgba(0,122,255,.1);border-radius:6px;padding:2px 7px">{{ v.shape }}</div>
+                    </div>
+                    <div style="font-size:12.5px;line-height:1.5;color:rgba(60,60,67,.8);margin-bottom:8px;text-wrap:pretty">{{ v.meaning }}</div>
+                    <div style="display:flex;align-items:center;gap:8px;font-size:11px">
+                      <span style="color:rgba(60,60,67,.5)">{{ v.originLabel }}</span>
+                      <span onClick="{{ v.jump }}" style="font-family:'JetBrains Mono',monospace;font-weight:600;color:#007AFF;cursor:pointer">{{ v.origin }}</span>
+                      <span style="flex:1"></span>
+                      <span onMouseEnter="{{ v.tipOn }}" onMouseLeave="{{ tipOff }}" style="display:flex;align-items:center;gap:4px;color:{{ v.certFg }};font-weight:600;cursor:help"><span style="width:5px;height:5px;border-radius:50%;background:{{ v.certDot }};display:inline-block"></span>{{ v.cert }}</span>
+                    </div>
+                    <sc-if value="{{ v.tipOpen }}">
+                      <div style="margin-top:8px;background:rgba(120,120,128,.09);border-radius:9px;padding:8px 10px;font-size:11.5px;line-height:1.5;color:rgba(60,60,67,.8)">{{ v.tipText }}</div>
+                    </sc-if>
+                    <sc-if value="{{ v.hasMeta }}">
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;margin-top:9px;padding-top:9px;border-top:0.5px solid rgba(84,84,86,.12)">
+                        <sc-for list="{{ v.meta }}" as="mm" hint-placeholder-count="4">
+                          <div style="display:flex;gap:7px;font-size:11px;line-height:1.7"><span style="color:rgba(60,60,67,.45);min-width:42px">{{ mm.k }}</span><span style="color:rgba(60,60,67,.8);font-family:'JetBrains Mono',monospace">{{ mm.v }}</span></div>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-for>
+                <div style="font-size:11px;font-weight:700;color:#FF9500;margin:14px 0 8px">OUTPUT</div>
+                <sc-for list="{{ c.outputs }}" as="v" hint-placeholder-count="1">
+                  <div onMouseEnter="{{ v.enter }}" onMouseLeave="{{ clearHl }}" style="border:0.5px solid {{ v.border }};border-radius:12px;padding:12px 13px;margin-bottom:8px;background:{{ v.bg }};cursor:default">
+                    <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">
+                      <div style="font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace">{{ v.name }}</div>
+                      <div style="font-size:11.5px;color:rgba(60,60,67,.5);font-family:'JetBrains Mono',monospace">{{ v.type }}</div>
+                      <div style="flex:1"></div>
+                      <div style="font-size:11.5px;font-weight:700;font-family:'JetBrains Mono',monospace;color:#FF9500;background:rgba(255,149,0,.12);border-radius:6px;padding:2px 7px">{{ v.shape }}</div>
+                    </div>
+                    <div style="font-size:12.5px;line-height:1.5;color:rgba(60,60,67,.8);margin-bottom:8px;text-wrap:pretty">{{ v.meaning }}</div>
+                    <div style="display:flex;align-items:center;gap:8px;font-size:11px">
+                      <span style="color:rgba(60,60,67,.5)">{{ v.originLabel }}</span>
+                      <span onClick="{{ v.jump }}" style="font-family:'JetBrains Mono',monospace;font-weight:600;color:#007AFF;cursor:pointer">{{ v.origin }}</span>
+                      <span style="flex:1"></span>
+                      <span onMouseEnter="{{ v.tipOn }}" onMouseLeave="{{ tipOff }}" style="display:flex;align-items:center;gap:4px;color:{{ v.certFg }};font-weight:600;cursor:help"><span style="width:5px;height:5px;border-radius:50%;background:{{ v.certDot }};display:inline-block"></span>{{ v.cert }}</span>
+                    </div>
+                    <sc-if value="{{ v.tipOpen }}">
+                      <div style="margin-top:8px;background:rgba(120,120,128,.09);border-radius:9px;padding:8px 10px;font-size:11.5px;line-height:1.5;color:rgba(60,60,67,.8)">{{ v.tipText }}</div>
+                    </sc-if>
+                    <sc-if value="{{ v.hasMeta }}">
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;margin-top:9px;padding-top:9px;border-top:0.5px solid rgba(84,84,86,.12)">
+                        <sc-for list="{{ v.meta }}" as="mm" hint-placeholder-count="4">
+                          <div style="display:flex;gap:7px;font-size:11px;line-height:1.7"><span style="color:rgba(60,60,67,.45);min-width:42px">{{ mm.k }}</span><span style="color:rgba(60,60,67,.8);font-family:'JetBrains Mono',monospace">{{ mm.v }}</span></div>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-for>
+                <div style="font-size:11px;font-weight:700;color:#AF52DE;margin:14px 0 8px">부작용 (SIDE EFFECTS)</div>
+                <div style="border-radius:12px;background:rgba(175,82,222,.06);padding:11px 13px">
+                  <sc-for list="{{ c.side }}" as="sd" hint-placeholder-count="2">
+                    <div style="display:flex;gap:8px;font-size:12.5px;line-height:1.6;color:rgba(60,60,67,.85)"><span style="color:#AF52DE">·</span><span style="flex:1;text-wrap:pretty">{{ sd }}</span></div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ c.isMath }}">
+                <div style="display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 10px;border-radius:999px;background:rgba(120,120,128,.10);margin-bottom:12px">
+                  <span style="font-size:10px;font-weight:700;color:rgba(60,60,67,.45)">표현 방식</span>
+                  <span style="font-size:11px;font-weight:600;color:rgba(60,60,67,.85)">{{ c.repr }}</span>
+                </div>
+                <sc-if value="{{ c.mathOk }}" hint-placeholder-val="{{ true }}">
+                  <div style="border-radius:12px;background:#FCFCFD;border:0.5px solid rgba(84,84,86,.12);padding:18px 14px;margin-bottom:12px;text-align:center">
+                    <div style="font-family:Georgia,'Times New Roman',serif;font-size:21px;line-height:1.9;color:#1D1D1F">
+                      <sc-for list="{{ c.tokens }}" as="tk" hint-placeholder-count="8"><span onMouseEnter="{{ tk.enter }}" onMouseLeave="{{ clearHl }}" style="font-style:{{ tk.style }};font-size:{{ tk.size }};vertical-align:{{ tk.va }};background:{{ tk.bg }};border-radius:4px;padding:1px 2px;cursor:{{ tk.cursor }};transition:background .12s">{{ tk.t }}</span></sc-for>
+                    </div>
+                  </div>
+                  <sc-if value="{{ c.hasPiecewise }}">
+                    <div style="font-size:11px;font-weight:700;color:rgba(60,60,67,.5);margin-bottom:8px">조건 분기 (piecewise)</div>
+                    <div style="border-left:2px solid rgba(84,84,86,.25);padding-left:12px;margin-bottom:14px">
+                      <sc-for list="{{ c.piecewise }}" as="p" hint-placeholder-count="3">
+                        <div style="display:flex;align-items:baseline;gap:10px;font-family:Georgia,serif;font-size:15px;line-height:2;color:#1D1D1F">
+                          <span style="font-style:italic;min-width:96px">{{ p.cond }}</span>
+                          <span style="color:rgba(60,60,67,.35)">→</span>
+                          <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:600">{{ p.val }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ c.hasDiagram }}">
+                    <div style="font-size:11px;font-weight:700;color:rgba(60,60,67,.5);margin-bottom:8px">상태 전이</div>
+                    <div style="border-radius:12px;background:rgba(120,120,128,.06);padding:12px 14px;margin-bottom:14px">
+                      <sc-for list="{{ c.diagram }}" as="d" hint-placeholder-count="3">
+                        <div style="display:flex;align-items:center;gap:9px;padding:4px 0">
+                          <span style="font-size:11.5px;font-family:'JetBrains Mono',monospace;font-weight:600;background:#fff;border:0.5px solid rgba(84,84,86,.18);border-radius:7px;padding:3px 8px">{{ d.from }}</span>
+                          <span style="font-size:10.5px;color:#007AFF;font-weight:600">— {{ d.edge }} →</span>
+                          <span style="font-size:11.5px;font-family:'JetBrains Mono',monospace;font-weight:600;background:#fff;border:0.5px solid rgba(84,84,86,.18);border-radius:7px;padding:3px 8px">{{ d.to }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                  <div style="font-size:11px;font-weight:700;color:rgba(60,60,67,.5);margin-bottom:8px">기호 ↔ 코드 변수</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px">
+                    <sc-for list="{{ c.mapping }}" as="m" hint-placeholder-count="4">
+                      <div onMouseEnter="{{ m.enter }}" onMouseLeave="{{ clearHl }}" style="display:flex;align-items:center;gap:7px;padding:6px 9px;border-radius:9px;background:{{ m.bg }};cursor:default">
+                        <span style="font-family:Georgia,serif;font-style:italic;font-size:14px;min-width:26px">{{ m.sym }}</span>
+                        <span style="color:rgba(60,60,67,.3);font-size:11px">↔</span>
+                        <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:rgba(60,60,67,.85);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ m.code }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="border-radius:12px;background:rgba(0,122,255,.06);padding:12px 14px;margin-bottom:10px">
+                    <div style="font-size:11px;font-weight:700;color:#007AFF;margin-bottom:6px">직관</div>
+                    <div style="font-size:13px;line-height:1.6;color:rgba(60,60,67,.88);text-wrap:pretty">{{ c.intuition }}</div>
+                  </div>
+                  <button onClick="{{ c.toggleExample }}" style="width:100%;height:34px;border:0.5px solid rgba(84,84,86,.2);border-radius:10px;background:#fff;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;color:#007AFF">{{ c.exampleLabel }}</button>
+                  <sc-if value="{{ c.showExample }}">
+                    <div style="margin-top:10px;border-radius:12px;background:rgba(120,120,128,.07);padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.9;color:rgba(60,60,67,.85);white-space:pre-wrap">{{ c.example }}</div>
+                  </sc-if>
+                </sc-if>
+                <sc-if value="{{ c.mathNo }}">
+                  <div style="border-radius:12px;background:rgba(255,149,0,.08);border:0.5px solid rgba(255,149,0,.25);padding:14px;margin-bottom:12px">
+                    <div style="font-size:13.5px;font-weight:700;color:#C93400;margin-bottom:6px">이 코드는 수식으로 표현하지 않습니다</div>
+                    <div style="font-size:12.5px;line-height:1.55;color:rgba(60,60,67,.8);text-wrap:pretty">{{ c.mathNoReason }}</div>
+                  </div>
+                  <div style="font-size:11px;font-weight:700;color:rgba(60,60,67,.5);margin-bottom:8px">대신, 실행 순서로 설명합니다</div>
+                  <sc-for list="{{ c.sequence }}" as="s" hint-placeholder-count="4">
+                    <div style="display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:10px;background:rgba(120,120,128,.06);margin-bottom:6px">
+                      <div style="width:18px;height:18px;border-radius:50%;background:rgba(0,122,255,.12);color:#007AFF;font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">{{ s.n }}</div>
+                      <div style="flex:1;font-size:12.5px;line-height:1.5;color:rgba(60,60,67,.85)">{{ s.text }}</div>
+                    </div>
+                  </sc-for>
+                </sc-if>
+              </sc-if>
+
+              <sc-if value="{{ c.isShape }}">
+                <sc-for list="{{ c.shape }}" as="s" hint-placeholder-count="4">
+                  <div onMouseEnter="{{ s.enter }}" onMouseLeave="{{ clearHl }}" style="display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:11px;background:{{ s.bg }};border:0.5px solid {{ s.border }};cursor:default">
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:rgba(60,60,67,.75);width:112px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ s.name }}</div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:{{ s.shapeFg }}">{{ s.shape }}</div>
+                    <div style="flex:1"></div>
+                    <div style="font-size:10.5px;font-weight:600;color:{{ s.certFg }};background:{{ s.certBg }};border-radius:6px;padding:2px 7px">{{ s.cert }}</div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px;padding:3px 0 3px 20px;color:rgba(60,60,67,.5)">
+                    <div style="width:1px;height:16px;background:rgba(84,84,86,.25)"></div>
+                    <div style="font-size:11.5px;font-family:'JetBrains Mono',monospace">{{ s.op }}</div>
+                  </div>
+                </sc-for>
+                <div style="margin-top:8px;border-radius:12px;background:rgba(120,120,128,.07);padding:12px 14px">
+                  <div style="font-size:11px;font-weight:700;color:rgba(60,60,67,.5);margin-bottom:8px">각 차원의 의미</div>
+                  <sc-for list="{{ c.dims }}" as="d" hint-placeholder-count="3">
+                    <div style="display:flex;gap:10px;font-size:12.5px;line-height:1.9"><span style="font-family:'JetBrains Mono',monospace;font-weight:700;width:24px">{{ d.k }}</span><span style="color:rgba(60,60,67,.8)">{{ d.v }}</span></div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ c.isFlow }}">
+                <div style="font-size:11px;font-weight:700;color:rgba(60,60,67,.5);margin-bottom:10px">데이터 흐름</div>
+                <sc-for list="{{ c.flow }}" as="f" hint-placeholder-count="5">
+                  <div onClick="{{ f.click }}" style="border-radius:11px;border:0.5px solid {{ f.border }};background:{{ f.bg }};padding:10px 12px;cursor:{{ f.cursor }}" style-hover="border-color:rgba(0,122,255,.4)">
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <div style="font-size:12.5px;font-weight:700;font-family:'JetBrains Mono',monospace;color:{{ f.nameFg }}">{{ f.name }}</div>
+                      <div style="flex:1"></div>
+                      <div style="font-size:11px;color:rgba(60,60,67,.5)">{{ f.role }}</div>
+                    </div>
+                    <div style="font-size:11.5px;color:rgba(60,60,67,.6);margin-top:3px;font-family:'JetBrains Mono',monospace">{{ f.file }}</div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px;padding:4px 0 4px 16px">
+                    <div style="width:1px;height:18px;background:rgba(84,84,86,.22)"></div>
+                    <div style="font-size:11.5px;font-family:'JetBrains Mono',monospace;color:#007AFF;font-weight:600">{{ f.edge }}</div>
+                  </div>
+                </sc-for>
+              </sc-if>
+
+              <sc-if value="{{ c.isReview }}">
+                <div style="font-size:12.5px;line-height:1.55;color:rgba(60,60,67,.7);margin-bottom:12px;text-wrap:pretty">이해한 내용을 바탕으로, 이제 문제점을 함께 봅니다.</div>
+                <div style="font-size:11px;font-weight:700;color:rgba(60,60,67,.5);margin-bottom:7px">주의점</div>
+                <div style="border-radius:12px;background:rgba(255,204,0,.10);padding:11px 13px;margin-bottom:14px">
+                  <sc-for list="{{ c.warn }}" as="w" hint-placeholder-count="3">
+                    <div style="display:flex;gap:8px;font-size:12.5px;line-height:1.6;color:rgba(60,60,67,.85)"><span style="color:#C93400">·</span><span style="flex:1;text-wrap:pretty">{{ w }}</span></div>
+                  </sc-for>
+                </div>
+                <sc-for list="{{ c.issues }}" as="i" hint-placeholder-count="2">
+                  <div onClick="{{ i.toggle }}" style="border-radius:12px;border:0.5px solid {{ i.border }};background:{{ i.bg }};padding:11px 13px;margin-bottom:8px;cursor:pointer">
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <div style="font-size:10px;font-weight:700;letter-spacing:.3px;color:{{ i.sevFg }};background:{{ i.sevBg }};border-radius:5px;padding:2px 6px">{{ i.severity }}</div>
+                      <div style="flex:1;font-size:13px;font-weight:600;text-wrap:pretty">{{ i.title }}</div>
+                      <div style="color:rgba(60,60,67,.3);font-size:12px">{{ i.chev }}</div>
+                    </div>
+                    <sc-if value="{{ i.open }}">
+                      <div style="margin-top:10px;padding-top:10px;border-top:0.5px solid rgba(84,84,86,.14)">
+                        <div style="font-size:11px;font-weight:700;color:rgba(60,60,67,.5);margin-bottom:4px">근거</div>
+                        <div style="font-size:12px;font-family:'JetBrains Mono',monospace;color:#007AFF;margin-bottom:10px">{{ i.evidence }}</div>
+                        <div style="font-size:11px;font-weight:700;color:rgba(60,60,67,.5);margin-bottom:4px">수학적 영향</div>
+                        <div style="font-size:12.5px;line-height:1.55;color:rgba(60,60,67,.85);margin-bottom:10px;text-wrap:pretty">{{ i.impact }}</div>
+                        <button onClick="{{ goReview }}" style="height:30px;padding:0 12px;border:none;border-radius:9px;background:rgba(0,122,255,.1);color:#007AFF;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">수정 전후 비교 보기</button>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </sc-if>
+            </div>
+          </sc-for>
+
+          <sc-for list="{{ chat }}" as="m" hint-placeholder-count="0">
+            <div style="display:flex;justify-content:{{ m.justify }};margin-bottom:8px">
+              <div style="max-width:88%;border-radius:14px;padding:10px 13px;background:{{ m.bg }};color:{{ m.fg }};font-size:12.5px;line-height:1.6;text-wrap:pretty;white-space:pre-wrap;border:0.5px solid {{ m.border }}">{{ m.text }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="flex-shrink:0;border-top:0.5px solid rgba(84,84,86,.14);background:#fff;padding:10px 14px 12px">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px">
+            <sc-for list="{{ chips }}" as="q" hint-placeholder-count="5">
+              <button onClick="{{ q.ask }}" style="height:26px;padding:0 11px;border:0.5px solid rgba(84,84,86,.18);border-radius:999px;background:#fff;font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;color:rgba(60,60,67,.85)" style-hover="background:rgba(0,122,255,.08);border-color:rgba(0,122,255,.35);color:#007AFF">{{ q.label }}</button>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input value="{{ draft }}" onChange="{{ setDraft }}" onKeyDown="{{ onKey }}" placeholder="이 함수에 대해 질문하기 — 현재 문맥이 자동 첨부됩니다" style="flex:1;height:34px;border:0.5px solid rgba(60,60,67,.22);border-radius:10px;padding:0 12px;font-size:12.5px;font-family:inherit;outline:none;background:#fff" />
+            <button onClick="{{ send }}" style="width:34px;height:34px;border:none;border-radius:10px;background:#007AFF;color:#fff;font-size:15px;cursor:pointer;font-family:inherit">↑</button>
+          </div>
+          <sc-if value="{{ isLearningMode }}">
+            <button onClick="{{ nextStep }}" style="width:100%;height:38px;margin-top:9px;border:none;border-radius:11px;background:#34C759;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">{{ nextLabel }}</button>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ MAP ============ -->
+  <sc-if value="{{ isMap }}">
+  <div style="min-height:100vh">
+    <div style="height:48px;display:flex;align-items:center;gap:12px;padding:0 20px;background:rgba(255,255,255,.8);backdrop-filter:blur(20px);border-bottom:0.5px solid rgba(84,84,86,.2);position:sticky;top:0;z-index:5">
+      <span onClick="{{ goWorkspace }}" style="font-size:13.5px;font-weight:600;color:#007AFF;cursor:pointer">‹ 워크스페이스</span>
+      <div style="font-size:14px;font-weight:600">프로젝트 지도</div>
+      <div style="flex:1"></div>
+      <div style="display:flex;gap:5px">
+        <sc-for list="{{ mapFilters }}" as="f" hint-placeholder-count="4">
+          <button onClick="{{ f.select }}" style="height:28px;padding:0 12px;border:0.5px solid {{ f.border }};border-radius:999px;background:{{ f.bg }};color:{{ f.fg }};font-size:12.5px;font-weight:{{ f.weight }};cursor:pointer;font-family:inherit">{{ f.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 320px;gap:0;min-height:calc(100vh - 48px)">
+      <div style="padding:32px 40px;background:radial-gradient(circle at 20% 10%,rgba(0,122,255,.05),transparent 60%),#FBFBFD">
+        <div style="max-width:760px;margin:0 auto">
+          <sc-for list="{{ mapNodes }}" as="n" hint-placeholder-count="6">
+            <div onClick="{{ n.click }}" style="border-radius:14px;border:0.5px solid {{ n.border }};background:{{ n.bg }};padding:14px 16px;cursor:pointer;box-shadow:{{ n.shadow }}" style-hover="border-color:rgba(0,122,255,.5)">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="width:8px;height:8px;border-radius:50%;background:{{ n.dot }}"></div>
+                <div style="font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace">{{ n.name }}</div>
+                <div style="font-size:11.5px;color:rgba(60,60,67,.5);font-family:'JetBrains Mono',monospace">{{ n.file }}</div>
+                <div style="flex:1"></div>
+                <div style="font-size:11px;font-weight:600;color:{{ n.tagFg }};background:{{ n.tagBg }};border-radius:6px;padding:2px 8px">{{ n.tag }}</div>
+              </div>
+              <div style="font-size:12.5px;color:rgba(60,60,67,.65);margin-top:5px;line-height:1.5;text-wrap:pretty">{{ n.desc }}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:6px 0 6px 24px">
+              <div style="width:1px;height:26px;background:rgba(0,122,255,.3)"></div>
+              <div style="font-size:11.5px;font-family:'JetBrains Mono',monospace;font-weight:600;color:#007AFF;background:rgba(0,122,255,.08);border-radius:6px;padding:2px 8px">{{ n.edge }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="border-left:0.5px solid rgba(84,84,86,.18);background:#fff;padding:22px 20px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.4px;color:rgba(60,60,67,.5);margin-bottom:12px">텍스트 목록</div>
+        <div style="font-size:12.5px;line-height:1.7;color:rgba(60,60,67,.8)">그래프는 목록으로도 동일하게 확인할 수 있습니다. 각 항목은 함수, 파일, 전달되는 데이터와 shape 순서입니다.</div>
+        <div style="margin-top:14px">
+          <sc-for list="{{ mapNodes }}" as="n" hint-placeholder-count="6">
+            <div onClick="{{ n.click }}" style="padding:9px 0;border-bottom:0.5px solid rgba(84,84,86,.12);cursor:pointer">
+              <div style="font-size:12.5px;font-weight:600;font-family:'JetBrains Mono',monospace">{{ n.name }}</div>
+              <div style="font-size:11.5px;color:rgba(60,60,67,.55);font-family:'JetBrains Mono',monospace">{{ n.file }} · → {{ n.edge }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="margin-top:18px;border-radius:12px;background:rgba(255,59,48,.07);padding:12px 14px">
+          <div style="font-size:12px;font-weight:700;color:#D70015;margin-bottom:4px">순환 호출 1건</div>
+          <div style="font-size:11.5px;line-height:1.5;color:rgba(60,60,67,.8);font-family:'JetBrains Mono',monospace">ppo.update() ⇄ rollout.collect()</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ REVIEW ============ -->
+  <sc-if value="{{ isReview }}">
+  <div style="min-height:100vh">
+    <div style="height:48px;display:flex;align-items:center;gap:12px;padding:0 20px;background:rgba(255,255,255,.8);backdrop-filter:blur(20px);border-bottom:0.5px solid rgba(84,84,86,.2);position:sticky;top:0;z-index:5">
+      <span onClick="{{ goWorkspace }}" style="font-size:13.5px;font-weight:600;color:#007AFF;cursor:pointer">‹ 워크스페이스</span>
+      <div style="font-size:14px;font-weight:600">코드 리뷰</div>
+      <div style="flex:1"></div>
+      <div style="font-size:12px;color:rgba(60,60,67,.55)">이해 단계를 마친 함수부터 리뷰가 열립니다</div>
+    </div>
+    <div style="max-width:1180px;margin:0 auto;padding:28px 24px 80px;display:grid;grid-template-columns:320px 1fr;gap:20px">
+      <div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px">
+          <sc-for list="{{ reviewKinds }}" as="k" hint-placeholder-count="4">
+            <button onClick="{{ k.select }}" style="height:27px;padding:0 11px;border:0.5px solid {{ k.border }};border-radius:999px;background:{{ k.bg }};color:{{ k.fg }};font-size:12px;font-weight:{{ k.weight }};cursor:pointer;font-family:inherit">{{ k.label }}</button>
+          </sc-for>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:rgba(60,60,67,.5);letter-spacing:.4px;margin-bottom:10px">문제 {{ issueCount }}건</div>
+        <sc-for list="{{ reviewList }}" as="i" hint-placeholder-count="4">
+          <div onClick="{{ i.select }}" style="border-radius:12px;border:0.5px solid {{ i.border }};background:{{ i.bg }};padding:12px 13px;margin-bottom:8px;cursor:pointer">
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">
+              <div style="font-size:10px;font-weight:700;color:{{ i.sevFg }};background:{{ i.sevBg }};border-radius:5px;padding:2px 6px">{{ i.severity }}</div>
+              <div style="font-size:10px;font-weight:600;color:rgba(60,60,67,.6);background:rgba(120,120,128,.12);border-radius:5px;padding:2px 6px">{{ i.kind }}</div>
+              <div style="font-size:11px;color:rgba(60,60,67,.5);font-family:'JetBrains Mono',monospace">{{ i.file }}</div>
+            </div>
+            <div style="font-size:13px;font-weight:600;line-height:1.45;text-wrap:pretty">{{ i.title }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="background:#fff;border-radius:16px;border:0.5px solid rgba(84,84,86,.12);padding:24px 26px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+          <div style="font-size:10.5px;font-weight:700;color:{{ sel.sevFg }};background:{{ sel.sevBg }};border-radius:5px;padding:3px 7px">{{ sel.severity }}</div>
+          <div style="font-size:10.5px;font-weight:600;color:rgba(60,60,67,.6);background:rgba(120,120,128,.12);border-radius:5px;padding:3px 7px">{{ sel.kind }} Review</div>
+          <div style="font-size:11.5px;font-family:'JetBrains Mono',monospace;color:rgba(60,60,67,.55)">{{ sel.file }}</div>
+        </div>
+        <h2 style="font-size:22px;font-weight:700;letter-spacing:-.4px;margin:0 0 14px;line-height:1.35;text-wrap:pretty">{{ sel.title }}</h2>
+        <sc-for list="{{ sel.sections }}" as="s" hint-placeholder-count="4">
+          <div style="margin-bottom:16px">
+            <div style="font-size:11px;font-weight:700;color:rgba(60,60,67,.5);letter-spacing:.3px;margin-bottom:5px">{{ s.k }}</div>
+            <div style="font-size:13.5px;line-height:1.6;color:rgba(60,60,67,.88);text-wrap:pretty">{{ s.v }}</div>
+          </div>
+        </sc-for>
+        <div style="font-size:11px;font-weight:700;color:rgba(60,60,67,.5);letter-spacing:.3px;margin:20px 0 8px">수정 전후</div>
+        <div style="border-radius:12px;border:0.5px solid rgba(84,84,86,.14);overflow:hidden;background:#FCFCFD">
+          <sc-for list="{{ sel.diff }}" as="d" hint-placeholder-count="5">
+            <div style="display:flex;background:{{ d.bg }};font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:23px">
+              <div style="width:22px;text-align:center;color:{{ d.markFg }};font-weight:700;flex-shrink:0">{{ d.mark }}</div>
+              <div style="flex:1;white-space:pre;color:{{ d.fg }};padding-right:12px">{{ d.text }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:16px">
+          <button onClick="{{ copyFix }}" style="height:34px;padding:0 15px;border:none;border-radius:10px;background:#007AFF;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">{{ copyLabel }}</button>
+          <button onClick="{{ goWorkspace }}" style="height:34px;padding:0 15px;border:0.5px solid rgba(84,84,86,.2);border-radius:10px;background:#fff;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit">코드 위치로 이동</button>
+        </div>
+        <div style="margin-top:16px;border-radius:12px;background:rgba(255,149,0,.08);padding:12px 14px">
+          <div style="font-size:11.5px;font-weight:700;color:#C93400;margin-bottom:4px">Trade-off</div>
+          <div style="font-size:12.5px;line-height:1.55;color:rgba(60,60,67,.8);text-wrap:pretty">{{ sel.tradeoff }}</div>
+        </div>
+        <div style="margin-top:12px;font-size:11.5px;color:rgba(60,60,67,.5)">MVP는 코드 파일을 자동으로 변경하지 않습니다. 복사만 제공합니다.</div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ ERRORS ============ -->
+  <sc-if value="{{ isErrors }}">
+  <div style="min-height:100vh">
+    <div style="height:48px;display:flex;align-items:center;gap:12px;padding:0 20px;background:rgba(255,255,255,.8);backdrop-filter:blur(20px);border-bottom:0.5px solid rgba(84,84,86,.2)">
+      <span onClick="{{ goWorkspace }}" style="font-size:13.5px;font-weight:600;color:#007AFF;cursor:pointer">‹ 돌아가기</span>
+      <div style="font-size:14px;font-weight:600">예외 및 실패 상태</div>
+    </div>
+    <div style="max-width:1000px;margin:0 auto;padding:28px 24px 80px">
+      <div style="font-size:13.5px;color:rgba(60,60,67,.6);margin-bottom:20px;text-wrap:pretty">모든 실패는 원인과 다음 행동을 함께 제시합니다. 정적 분석 결과는 유지되고, 실패한 부분만 다시 시도합니다.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <sc-for list="{{ errorCards }}" as="e" hint-placeholder-count="6">
+          <div style="background:#fff;border-radius:16px;border:0.5px solid {{ e.border }};padding:18px 20px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+              <div style="width:8px;height:8px;border-radius:50%;background:{{ e.dot }}"></div>
+              <div style="font-size:14.5px;font-weight:700;letter-spacing:-.2px">{{ e.title }}</div>
+            </div>
+            <div style="font-size:13px;line-height:1.6;color:rgba(60,60,67,.75);margin-bottom:12px;text-wrap:pretty">{{ e.body }}</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.75;color:rgba(60,60,67,.7);background:rgba(120,120,128,.07);border-radius:10px;padding:10px 12px;white-space:pre-wrap">{{ e.detail }}</div>
+            <button style="margin-top:12px;height:30px;padding:0 13px;border:none;border-radius:9px;background:rgba(0,122,255,.1);color:#007AFF;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit">{{ e.action }}</button>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ PROTOTYPE NAV ============ -->
+  <div style="position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:50;display:flex;flex-direction:column;align-items:center;gap:6px">
+    <sc-if value="{{ navOpen }}">
+      <div style="background:rgba(255,255,255,.86);backdrop-filter:saturate(180%) blur(24px);border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.18);border:0.5px solid rgba(84,84,86,.14);padding:6px;width:186px">
+        <sc-for list="{{ screenList }}" as="s" hint-placeholder-count="9">
+          <div onClick="{{ s.go }}" style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:9px;cursor:pointer;background:{{ s.bg }}" style-hover="background:rgba(120,120,128,.12)">
+            <div style="width:5px;height:5px;border-radius:50%;background:{{ s.dot }}"></div>
+            <div style="font-size:12.5px;font-weight:{{ s.weight }};color:{{ s.fg }}">{{ s.label }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+    <button onClick="{{ toggleNav }}" style="height:32px;padding:0 14px;border:none;border-radius:999px;background:rgba(0,0,0,.82);color:#fff;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;backdrop-filter:blur(20px);box-shadow:0 6px 20px rgba(0,0,0,.22)">{{ navLabel }}</button>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1680,&quot;height&quot;:900}}">
+const C = {
+  verified: { label: '직접 확인', fg: '#248A3D', dot: '#34C759', bg: 'rgba(52,199,89,.12)', tip: '코드에 명시된 정보입니다. signature, type hint, 상수, 반환문에서 직접 읽었습니다.' },
+  stat: { label: '정적 분석', fg: '#0062CC', dot: '#007AFF', bg: 'rgba(0,122,255,.12)', tip: 'AST, call graph, 변수 사용 관계로 확인했습니다. 실행 없이 확정할 수 있는 범위입니다.' },
+  infer: { label: '문맥 추론', fg: '#C93400', dot: '#FF9500', bg: 'rgba(255,149,0,.14)', tip: '변수명, 주석, 사용 위치를 근거로 추정했습니다. 사실이 아닐 수 있습니다.' },
+  runtime: { label: '실행 필요', fg: '#6B21A8', dot: '#AF52DE', bg: 'rgba(175,82,222,.12)', tip: '정적 분석만으로는 확정할 수 없습니다. 실행 시 입력 예시나 runtime trace가 필요합니다.' }
+};
+
+const KW = /^(def|class|return|if|else|elif|for|while|import|from|with|as|in|not|and|or|None|True|False|self|super|lambda|raise|try|except|yield|assert)$/;
+
+const FUNCS = [
+  {
+    id: 'run', name: 'run()', qual: 'main.py / run()', file: 'main.py', lines: '12–34',
+    oneLine: '설정을 읽어 환경·정책·MPC를 만들고, 제어 루프를 돌리는 프로그램의 시작점입니다.',
+    systemRole: '모든 구성요소가 여기서 생성되고 연결됩니다. 다른 함수를 이해하기 전에 이 함수의 순서를 먼저 보세요.',
+    chain: ['run', 'build_observation', 'forward', 'solve'],
+    cert: 'verified',
+    code: [
+      [12, 'def run(cfg_path: str = "configs/default.yaml") -> None:', null],
+      [13, '    cfg = load_config(cfg_path)', 'config 로드'],
+      [14, '    env = make_env(cfg.env)', null],
+      [15, '    actor = AdaptiveCostActor(cfg.obs_dim, cfg.horizon, cfg.n_cost)', 'Actor 생성'],
+      [16, '    mpc = MPCSolver(cfg.mpc)', null],
+      [17, '    trainer = PPOTrainer(actor, cfg.ppo)', null],
+      [18, '', null],
+      [19, '    obs = env.reset()', null],
+      [20, '    for step in range(cfg.max_steps):', '제어 루프'],
+      [21, '        observation = build_observation(obs, env.object_state)', null],
+      [22, '        residual = actor(observation)', null],
+      [23, '        weight = apply_phase_prior(residual, env.phase)', null],
+      [24, '        u_seq = mpc.solve(obs.x, cfg.x_ref, weight)', null],
+      [25, '        obs, rew, done = env.step(u_seq[:, 0])', null],
+      [26, '        trainer.store(observation, residual, rew)', null],
+      [27, '', null],
+      [28, '        if step % cfg.update_every == 0:', '학습 업데이트'],
+      [29, '            trainer.update()', null],
+      [30, '        if done:', null],
+      [31, '            obs = env.reset()', null],
+      [32, '', null],
+      [33, '    save_checkpoint(actor, cfg.out_dir)', null],
+      [34, '    env.close()', null]
+    ],
+    inputs: [{ name: 'cfg_path', type: 'str', shape: '—', meaning: '실험 설정 YAML 경로입니다. 관측 차원, horizon, cost 항목 수가 모두 여기서 결정됩니다.', originLabel: '기본값', origin: 'configs/default.yaml', cert: 'verified', lines: [12, 13] }],
+    outputs: [{ name: '(없음)', type: 'None', shape: '—', meaning: '값을 반환하지 않습니다. 부작용으로 체크포인트 파일을 저장하고 환경을 종료합니다.', originLabel: '부작용', origin: 'save_checkpoint()', cert: 'verified', lines: [33, 34] }],
+    mathOk: false,
+    mathNoReason: '이 함수는 수치 계산이 아니라 객체 생성과 루프 제어를 담당합니다. 억지로 수식화하면 오히려 의미가 흐려집니다.',
+    sequence: [
+      { n: 1, text: '설정을 읽고 환경·Actor·MPC·Trainer를 생성합니다. (13–17줄)' },
+      { n: 2, text: '매 스텝 관측을 구성하고 Actor로 cost weight residual을 얻습니다. (21–22줄)' },
+      { n: 3, text: 'phase prior를 적용한 weight로 MPC를 풀고, 첫 입력만 환경에 적용합니다. (23–25줄)' },
+      { n: 4, text: 'update_every 스텝마다 PPO 업데이트를 호출합니다. (28–29줄)' }
+    ],
+    shape: [
+      { name: 'observation', shape: '[B, 24]', op: '↓ actor(observation)', cert: 'stat', lines: [21] },
+      { name: 'residual', shape: '[B, 6, 5]', op: '↓ apply_phase_prior', cert: 'stat', lines: [22] },
+      { name: 'u_seq', shape: '[B, 6, 12]', op: '↓ u_seq[:, 0]', cert: 'infer', lines: [24] },
+      { name: 'action', shape: '[B, 12]', op: '↓ env.step', cert: 'infer', lines: [25] }
+    ],
+    dims: [{ k: 'B', v: '배치 크기 — 실행 시 결정됩니다' }, { k: '6', v: 'MPC prediction horizon (cfg.horizon)' }, { k: '12', v: '관절 토크 명령 수' }],
+    flow: [
+      { name: '__main__', file: 'main.py:37', role: '호출자', edge: 'cfg_path', link: null },
+      { name: 'build_observation()', file: 'envs/observation.py', role: '호출 대상', edge: 'observation [B, 24]', link: 'obs' },
+      { name: 'AdaptiveCostActor.forward()', file: 'models/actor.py', role: '호출 대상', edge: 'residual [B, 6, 5]', link: 'fwd' },
+      { name: 'MPCSolver.solve()', file: 'control/mpc.py', role: '호출 대상', edge: 'u_seq [B, 6, 12]', link: 'solve' }
+    ],
+    issues: [{ severity: 'Suggestion', title: 'update_every가 done 시점과 어긋나면 마지막 rollout이 버려집니다', evidence: 'main.py 28–31줄', impact: '에피소드 종료 직후 남은 transition이 업데이트에 포함되지 않아 학습 신호가 일부 손실됩니다.' }]
+  },
+  {
+    id: 'obs', name: 'build_observation()', qual: 'envs/observation.py / build_observation()', file: 'envs/observation.py', lines: '18–31',
+    oneLine: '로봇 상태·물체 상태·접촉 정보를 하나의 정규화된 관측 벡터로 합칩니다.',
+    systemRole: '환경에서 나온 원시 상태와 Actor 사이를 잇는 어댑터입니다. 여기서 정한 차원 순서가 이후 모든 shape의 기준이 됩니다.',
+    chain: ['env.step', 'build_observation', 'forward', 'solve'],
+    cert: 'stat',
+    code: [
+      [18, 'def build_observation(robot: RobotState, obj: ObjectState) -> torch.Tensor:', null],
+      [19, '    """Return normalized observation of shape [B, 24]."""', 'docstring 근거'],
+      [20, '    q = robot.joint_pos          # [B, 12]', null],
+      [21, '    dq = robot.joint_vel * DT    # [B, 12] -> scaled', null],
+      [22, '    p_obj = obj.position         # [B, 3]', null],
+      [23, '    contact = robot.contact_flags.float()  # [B, 4]', null],
+      [24, '', null],
+      [25, '    raw = torch.cat([q[:, :8], dq[:, :9], p_obj, contact], dim=-1)', 'concat'],
+      [26, '    obs = (raw - OBS_MEAN) / (OBS_STD + 1e-6)', '정규화'],
+      [27, '', null],
+      [28, '    if obs.isnan().any():', null],
+      [29, '        raise ValueError("NaN in observation")', null],
+      [30, '', null],
+      [31, '    return obs', null]
+    ],
+    inputs: [
+      { name: 'robot', type: 'RobotState', shape: '[B, 12]×2', meaning: '관절 위치와 속도, 접촉 플래그를 담은 dataclass입니다. 속도는 DT로 스케일됩니다.', originLabel: '생성 위치', origin: 'env.step()', cert: 'stat', lines: [20, 21, 23] },
+      { name: 'obj', type: 'ObjectState', shape: '[B, 3]', meaning: '조작 대상 물체의 월드 좌표 위치입니다. 단위는 m로 추정됩니다.', originLabel: '생성 위치', origin: 'env.reset()', cert: 'infer', lines: [22] }
+    ],
+    outputs: [{ name: 'obs', type: 'torch.Tensor', shape: '[B, 24]', meaning: '정규화된 관측 벡터입니다. 8(관절위치) + 9(관절속도) + 3(물체위치) + 4(접촉) = 24입니다.', originLabel: '사용 위치', origin: 'AdaptiveCostActor.forward()', cert: 'verified', lines: [25, 26, 31] }],
+    mathOk: true,
+    tokens: [
+      { t: 'o', k: 'var', lines: [26, 31] }, { t: ' = ', k: 'op' },
+      { t: '(', k: 'op' }, { t: 'concat', k: 'fn', lines: [25] }, { t: '(', k: 'op' },
+      { t: 'q', k: 'var', lines: [20] }, { t: ', ', k: 'op' },
+      { t: 'q̇', k: 'var', lines: [21] }, { t: '·Δt', k: 'op', lines: [21] }, { t: ', ', k: 'op' },
+      { t: 'p', k: 'var', lines: [22] }, { t: 'obj', k: 'sub', lines: [22] }, { t: ', ', k: 'op' },
+      { t: 'c', k: 'var', lines: [23] }, { t: ')', k: 'op' },
+      { t: ' − ', k: 'op' }, { t: 'μ', k: 'var', lines: [26] }, { t: ')', k: 'op' },
+      { t: ' / ', k: 'op' }, { t: 'σ', k: 'var', lines: [26] }
+    ],
+    mapping: [
+      { sym: 'q', code: 'robot.joint_pos[:, :8]', lines: [20, 25] },
+      { sym: 'q̇', code: 'robot.joint_vel * DT', lines: [21, 25] },
+      { sym: 'p_obj', code: 'obj.position', lines: [22, 25] },
+      { sym: 'c', code: 'contact_flags.float()', lines: [23, 25] },
+      { sym: 'μ, σ', code: 'OBS_MEAN, OBS_STD', lines: [26] },
+      { sym: 'o', code: 'obs', lines: [26, 31] }
+    ],
+    intuition: '서로 단위가 다른 값(rad, rad/s, m, 0/1)을 그대로 이어붙이면 신경망이 큰 값에만 반응합니다. 평균을 빼고 표준편차로 나눠 모든 축을 비슷한 크기로 맞춥니다.',
+    example: 'q[0]      = 0.42 rad\nOBS_MEAN[0] = 0.30\nOBS_STD[0]  = 0.15\n\no[0] = (0.42 − 0.30) / 0.15 ≈ 0.80',
+    shape: [
+      { name: 'q (slice)', shape: '[B, 8]', op: '↓ cat(dim=-1)', cert: 'verified', lines: [20, 25] },
+      { name: 'dq (slice)', shape: '[B, 9]', op: '↓ cat(dim=-1)', cert: 'verified', lines: [21, 25] },
+      { name: 'p_obj + contact', shape: '[B, 7]', op: '↓ cat(dim=-1)', cert: 'verified', lines: [22, 23] },
+      { name: 'raw', shape: '[B, 24]', op: '↓ (raw − μ) / σ', cert: 'stat', lines: [25] },
+      { name: 'obs', shape: '[B, 24]', op: '↓ return', cert: 'verified', lines: [26, 31] }
+    ],
+    dims: [{ k: 'B', v: '배치 크기 — 실행 시 결정됩니다' }, { k: '24', v: '8 + 9 + 3 + 4 로 구성된 관측 차원' }],
+    flow: [
+      { name: 'env.step()', file: 'envs/quadruped.py', role: '이전', edge: 'RobotState, ObjectState', link: null },
+      { name: 'build_observation()', file: 'envs/observation.py', role: '현재', edge: 'obs [B, 24]', link: 'obs' },
+      { name: 'AdaptiveCostActor.forward()', file: 'models/actor.py', role: '다음', edge: 'residual [B, 6, 5]', link: 'fwd' }
+    ],
+    issues: [
+      { severity: 'Warning', title: 'q는 8개, dq는 9개만 사용합니다 — 의도한 슬라이스인지 확인이 필요합니다', evidence: 'envs/observation.py 25줄', impact: '관절 12개 중 일부가 관측에서 빠집니다. 대칭성이 깨져 정책이 특정 다리에만 반응할 수 있습니다.' },
+      { severity: 'Suggestion', title: 'OBS_MEAN / OBS_STD가 모듈 상수로 하드코딩되어 있습니다', evidence: 'envs/observation.py 26줄', impact: '환경이 바뀌면 정규화가 어긋납니다. config로 분리하면 실험 재현이 쉬워집니다.' }
+    ]
+  },
+  {
+    id: 'fwd', name: 'AdaptiveCostActor.forward()', qual: 'models/actor.py / AdaptiveCostActor.forward()', file: 'models/actor.py', lines: '41–47',
+    oneLine: '현재 관측으로부터, MPC가 사용할 cost weight의 변화량을 계산합니다.',
+    systemRole: '관측이 만들어진 직후, MPC 최적화 직전에 호출됩니다. 이 함수의 출력은 로봇 명령이 아니라 "MPC를 어떻게 풀지"를 바꾸는 값입니다.',
+    chain: ['build_observation', 'forward', 'apply_phase_prior', 'solve'],
+    cert: 'stat',
+    code: [
+      [38, '    def __init__(self, obs_dim=24, horizon=6, n_cost=5):', null],
+      [39, '        self.fc1 = nn.Linear(obs_dim, 128)', 'W₁, b₁'],
+      [40, '        self.fc2 = nn.Linear(128, horizon * n_cost)', 'W₂, b₂'],
+      [41, '    def forward(self, observation: torch.Tensor) -> torch.Tensor:', null],
+      [42, '        h = torch.tanh(self.fc1(observation))     # [B, 128]', 'h'],
+      [43, '        raw = self.fc2(h)                         # [B, 30]', null],
+      [44, '        residual = raw.view(-1, self.horizon, self.n_cost)', 'reshape'],
+      [45, '        residual = torch.tanh(residual) * self.scale', 's · tanh'],
+      [46, '        return residual                           # [B, 6, 5]', 'Δw'],
+      [47, '', null]
+    ],
+    inputs: [{ name: 'observation', type: 'torch.Tensor', shape: '[B, 24]', meaning: '로봇·물체·접촉 상태를 담은 정규화된 관측 벡터입니다.', originLabel: '생성 위치', origin: 'build_observation()', cert: 'stat', lines: [41, 42] }],
+    outputs: [{ name: 'residual', type: 'torch.Tensor', shape: '[B, 6, 5]', meaning: 'MPC horizon 단계별·cost 항목별 가중치 변화량입니다. tanh와 scale로 범위가 제한됩니다.', originLabel: '사용 위치', origin: 'apply_phase_prior()', cert: 'infer', lines: [44, 45, 46] }],
+    mathOk: true,
+    tokens: [
+      { t: 'Δw', k: 'var', lines: [45, 46] }, { t: ' = ', k: 'op' },
+      { t: 's', k: 'var', lines: [45] }, { t: ' · ', k: 'op' },
+      { t: 'tanh', k: 'fn', lines: [45] }, { t: '(', k: 'op' },
+      { t: 'reshape', k: 'fn', lines: [44] }, { t: '(', k: 'op' },
+      { t: 'W', k: 'var', lines: [40, 43] }, { t: '2', k: 'sub', lines: [40, 43] },
+      { t: ' tanh', k: 'fn', lines: [42] }, { t: '(', k: 'op' },
+      { t: 'W', k: 'var', lines: [39, 42] }, { t: '1', k: 'sub', lines: [39, 42] },
+      { t: 'o', k: 'var', lines: [41, 42] }, { t: ' + ', k: 'op' },
+      { t: 'b', k: 'var', lines: [39] }, { t: '1', k: 'sub', lines: [39] }, { t: ')', k: 'op' },
+      { t: ' + ', k: 'op' }, { t: 'b', k: 'var', lines: [40] }, { t: '2', k: 'sub', lines: [40] },
+      { t: ')', k: 'op' }, { t: ')', k: 'op' }
+    ],
+    mapping: [
+      { sym: 'o', code: 'observation', lines: [41, 42] },
+      { sym: 'W₁,b₁', code: 'self.fc1', lines: [39, 42] },
+      { sym: 'h', code: 'h', lines: [42] },
+      { sym: 'W₂,b₂', code: 'self.fc2', lines: [40, 43] },
+      { sym: 's', code: 'self.scale', lines: [45] },
+      { sym: 'Δw', code: 'residual', lines: [44, 45, 46] }
+    ],
+    intuition: '2층 MLP가 관측을 30개의 숫자로 압축한 뒤, 그것을 6×5 표로 접습니다. 각 칸은 "이 시점의 이 비용 항목을 얼마나 더/덜 중요하게 볼지"입니다. 마지막 tanh와 scale은 그 조정폭을 ±s 안으로 묶어 MPC가 폭주하지 않게 합니다.',
+    example: 'observation[0, :3] = [0.80, −0.12, 0.35]\n\nh      = tanh(W₁o + b₁)   → [B, 128], 값은 −1~1\nraw    = W₂h + b₂         → [B, 30]\nreshape                    → [B, 6, 5]\nΔw[0, 0] = [0.42, −0.18, 0.05, 0.31, −0.09] × s\n           (s = 2.0 이면 실제 조정폭은 ±2.0)',
+    shape: [
+      { name: 'observation', shape: '[B, 24]', op: '↓ Linear(24 → 128) + tanh', cert: 'verified', lines: [41, 42] },
+      { name: 'h', shape: '[B, 128]', op: '↓ Linear(128 → 30)', cert: 'verified', lines: [42, 43] },
+      { name: 'raw', shape: '[B, 30]', op: '↓ view(-1, 6, 5)', cert: 'verified', lines: [43, 44] },
+      { name: 'residual', shape: '[B, 6, 5]', op: '↓ return', cert: 'stat', lines: [44, 46] }
+    ],
+    dims: [
+      { k: 'B', v: '배치 크기 — 실행해야 확인됩니다' },
+      { k: '6', v: 'MPC prediction horizon (self.horizon)' },
+      { k: '5', v: 'cost term 개수: 추적·자세·접촉력·입력·평활' }
+    ],
+    flow: [
+      { name: 'build_observation()', file: 'envs/observation.py', role: '이전', edge: 'observation [B, 24]', link: 'obs' },
+      { name: 'AdaptiveCostActor.forward()', file: 'models/actor.py', role: '현재', edge: 'residual [B, 6, 5]', link: 'fwd' },
+      { name: 'apply_phase_prior()', file: 'control/mpc.py', role: '다음', edge: 'cost_weight [B, 6, 5]', link: 'solve' },
+      { name: 'MPCSolver.solve()', file: 'control/mpc.py', role: '다음', edge: 'u_seq [B, 6, 12]', link: 'solve' }
+    ],
+    issues: [
+      { severity: 'Warning', title: '출력에 tanh를 두 번 적용하면 gradient가 쉽게 포화됩니다', evidence: 'models/actor.py 45줄', impact: 'raw 값이 커질수록 ∂tanh/∂x → 0이 되어 학습 초반에 weight 조정이 거의 일어나지 않을 수 있습니다.' },
+      { severity: 'Suggestion', title: 'self.scale이 학습 대상인지 상수인지 코드에서 드러나지 않습니다', evidence: 'models/actor.py 45줄', impact: 'nn.Parameter가 아니라면 상수로 명시하는 편이 의도를 분명히 합니다.' }
+    ]
+  },
+  {
+    id: 'phase', name: 'apply_phase_prior()', qual: 'control/mpc.py / apply_phase_prior()', file: 'control/mpc.py', lines: '38–52',
+    oneLine: 'phase에 따라 기준 가중치를 고르고, Actor의 변화량을 더해 최종 cost weight를 만듭니다.',
+    systemRole: 'Actor의 출력과 MPC 사이에 있는 안전장치입니다. 학습이 이상해져도 가중치가 물리적으로 말이 되는 범위에 머물게 합니다.',
+    chain: ['forward', 'apply_phase_prior', 'solve', 'env.step'],
+    cert: 'stat',
+    code: [
+      [38, 'PHASE_PRIOR = {', null],
+      [39, '    "PRE_CONTACT":  [10.0, 2.0,  1.5, 0.1, 0.5],', 'W_pre'],
+      [40, '    "CONTACT":      [ 6.0, 2.0, 55.0, 0.1, 0.5],', 'W_contact'],
+      [41, '    "POST_CONTACT": [12.0, 3.0,  8.0, 0.1, 0.5],', 'W_post'],
+      [42, '}', null],
+      [43, '', null],
+      [44, 'def apply_phase_prior(residual, phase, contact_force):', null],
+      [45, '    if contact_force > FORCE_LIMIT:', '전이 조건'],
+      [46, '        phase = "FAILED"', 'FAILED'],
+      [47, '    elif contact_force > CONTACT_EPS:', null],
+      [48, '        phase = "CONTACT"', null],
+      [49, '', null],
+      [50, '    base = torch.tensor(PHASE_PRIOR[phase])   # [5]', 'W_phase'],
+      [51, '    weight = base.view(1, 1, 5) + residual    # [B, 6, 5]', 'W = W_p + Δw'],
+      [52, '    return weight.clamp_min(1e-3), phase', 'clamp_min'],
+      [53, '', null]
+    ],
+    inputs: [
+      { name: 'residual', type: 'torch.Tensor', shape: '[B, 6, 5]', meaning: 'Actor가 계산한 가중치 변화량입니다. 기준 가중치에 더해집니다.', originLabel: '생성 위치', origin: 'AdaptiveCostActor.forward()', cert: 'stat', lines: [44, 51] },
+      { name: 'phase', type: 'str', shape: '—', meaning: '접촉 단계입니다. 어떤 기준 가중치를 쓸지 결정합니다.', originLabel: '생성 위치', origin: 'env.phase', cert: 'infer', lines: [44, 45, 50] }
+    ],
+    outputs: [{ name: 'weight', type: 'torch.Tensor', shape: '[B, 6, 5]', meaning: 'MPC가 실제로 사용할 최종 가중치입니다. 1e-3 이상으로 제한됩니다.', originLabel: '사용 위치', origin: 'MPCSolver.solve()', cert: 'stat', lines: [51, 52] }],
+    mathOk: true,
+    tokens: [
+      { t: 'W', k: 'var', lines: [51] }, { t: 't', k: 'sub' }, { t: ' = max( ', k: 'op', lines: [52] },
+      { t: 'W', k: 'var', lines: [50] }, { t: 'phase', k: 'sub', lines: [50] },
+      { t: ' + ', k: 'op' }, { t: 'Δw', k: 'var', lines: [51] }, { t: 't', k: 'sub' },
+      { t: ',  ε )', k: 'op', lines: [52] }
+    ],
+    mapping: [
+      { sym: 'W_phase', code: 'PHASE_PRIOR[phase]', lines: [39, 40, 41, 50] },
+      { sym: 'Δw', code: 'residual', lines: [51] },
+      { sym: 'W', code: 'weight', lines: [51, 52] },
+      { sym: 'ε', code: 'clamp_min(1e-3)', lines: [52] },
+      { sym: 'F', code: 'contact_force', lines: [45, 47] },
+      { sym: 'F_max', code: 'FORCE_LIMIT', lines: [45] }
+    ],
+    piecewise: [
+      { cond: 'F > F_max', val: 'FAILED' },
+      { cond: 'F > ε_c', val: 'CONTACT' },
+      { cond: '그 외', val: 'phase 유지' }
+    ],
+    diagram: [
+      { from: 'PRE_CONTACT', edge: 'F > ε_c', to: 'CONTACT' },
+      { from: 'CONTACT', edge: '접촉 안정 후', to: 'POST_CONTACT' },
+      { from: 'CONTACT', edge: 'F > F_max', to: 'FAILED' }
+    ],
+    intuition: '가중치를 정책이 처음부터 만들게 하지 않고, 단계별 "정답에 가까운 기본값"에서 출발해 정책이 조금씩 밀어보게 합니다. 학습 초기에 MPC가 이상한 해를 내는 것을 막는 구조입니다.',
+    example: 'phase    = "CONTACT"\nW_phase  = [6.0, 2.0, 55.0, 0.1, 0.5]\nΔw[0,0]  = [0.4, −0.2, 0.1, 0.0, 0.0] × 2.0\n\nW[0,0]   = [6.8, 1.6, 55.2, 0.1, 0.5]\n\nPRE_CONTACT에서는 접촉력 항이 1.5,\nCONTACT에서는 55.0 — 36배 점프합니다.',
+    shape: [
+      { name: 'base', shape: '[5]', op: '↓ view(1, 1, 5)', cert: 'verified', lines: [50] },
+      { name: 'base (broadcast)', shape: '[1, 1, 5]', op: '↓ + residual [B, 6, 5]', cert: 'verified', lines: [51] },
+      { name: 'weight', shape: '[B, 6, 5]', op: '↓ clamp_min(1e-3)', cert: 'stat', lines: [51, 52] }
+    ],
+    dims: [{ k: '5', v: 'cost term 개수 — PHASE_PRIOR 리스트 길이와 일치' }, { k: '6', v: 'MPC horizon — residual에서 옵니다' }, { k: 'B', v: '배치 크기 — 실행 시 결정' }],
+    flow: [
+      { name: 'AdaptiveCostActor.forward()', file: 'models/actor.py', role: '이전', edge: 'residual [B, 6, 5]', link: 'fwd' },
+      { name: 'apply_phase_prior()', file: 'control/mpc.py', role: '현재', edge: 'cost_weight [B, 6, 5]', link: 'phase' },
+      { name: 'MPCSolver.solve()', file: 'control/mpc.py', role: '다음', edge: 'u_seq [B, 6, 12]', link: 'solve' }
+    ],
+    issues: [
+      { severity: 'Critical', title: 'phase 전환 시 접촉력 가중치가 1.5에서 55로 불연속 점프합니다', evidence: 'control/mpc.py 39–41, 50줄', impact: 'W가 불연속이면 MPC의 해도 불연속이 됩니다. 한 스텝 사이에 토크 명령이 크게 튀어 실제 로봇에서 충격이 발생할 수 있습니다.' },
+      { severity: 'Warning', title: 'FAILED에서 다른 phase로 돌아가는 전이가 없습니다', evidence: 'control/mpc.py 45–48줄', impact: '한 번 FAILED가 되면 에피소드가 끝날 때까지 PHASE_PRIOR["FAILED"] 조회가 KeyError를 냅니다.' }
+    ]
+  },
+  {
+    id: 'solve', name: 'MPCSolver.solve()', qual: 'control/mpc.py / MPCSolver.solve()', file: 'control/mpc.py', lines: '62–71',
+    oneLine: '주어진 cost weight로 2차 비용을 최소화하는 제어 입력 시퀀스를 계산합니다.',
+    systemRole: 'Actor가 조정한 가중치를 실제 로봇 명령으로 바꾸는 마지막 단계입니다. 여기서 나온 첫 입력만 환경에 적용됩니다.',
+    chain: ['forward', 'apply_phase_prior', 'solve', 'env.step'],
+    cert: 'stat',
+    code: [
+      [62, '    def solve(self, x0, x_ref, cost_weight):', null],
+      [63, '        N, W = self.horizon, cost_weight', null],
+      [64, '        H = self._build_hessian(W)              # [B, 72, 72]', 'H'],
+      [65, '        g = self._build_gradient(x0, x_ref, W)  # [B, 72]', 'g'],
+      [66, '', null],
+      [67, '        u_seq = torch.linalg.solve(H, -g)', 'Hu = −g'],
+      [68, '        u_seq = u_seq.view(-1, N, self.u_dim)', 'reshape'],
+      [69, '        return u_seq.clamp(-self.u_max, self.u_max)', 'clamp'],
+      [70, '', null],
+      [71, '', null]
+    ],
+    inputs: [
+      { name: 'x0', type: 'torch.Tensor', shape: '[B, 24]', meaning: '현재 상태입니다. 예측의 시작점이 됩니다.', originLabel: '생성 위치', origin: 'env.step()', cert: 'stat', lines: [62, 65] },
+      { name: 'cost_weight', type: 'torch.Tensor', shape: '[B, 6, 5]', meaning: 'phase prior가 적용된 최종 가중치입니다. Hessian과 gradient를 모두 이 값이 결정합니다.', originLabel: '생성 위치', origin: 'apply_phase_prior()', cert: 'stat', lines: [63, 64, 65] }
+    ],
+    outputs: [{ name: 'u_seq', type: 'torch.Tensor', shape: '[B, 6, 12]', meaning: 'horizon 전체의 관절 토크 시퀀스입니다. u_max로 잘려 나갑니다.', originLabel: '사용 위치', origin: 'env.step(u_seq[:, 0])', cert: 'infer', lines: [68, 69] }],
+    mathOk: true,
+    tokens: [
+      { t: 'u', k: 'var', lines: [67, 68] }, { t: '*', k: 'sub', lines: [67] },
+      { t: ' = arg min ', k: 'op' },
+      { t: 'Σ', k: 'fn', lines: [64, 65] }, { t: 't=0..N−1', k: 'sub', lines: [63] },
+      { t: ' ‖', k: 'op' }, { t: 'x', k: 'var', lines: [65] }, { t: 't', k: 'sub' },
+      { t: ' − ', k: 'op' }, { t: 'x', k: 'var', lines: [65] }, { t: 'ref', k: 'sub', lines: [65] },
+      { t: '‖²', k: 'op' }, { t: 'W', k: 'sub', lines: [63, 64] },
+      { t: ' + ', k: 'op' }, { t: '‖', k: 'op' }, { t: 'u', k: 'var', lines: [67] }, { t: 't', k: 'sub' }, { t: '‖²', k: 'op' }, { t: 'R', k: 'sub', lines: [64] },
+      { t: '   ⟹   ', k: 'op' },
+      { t: 'H', k: 'var', lines: [64, 67] }, { t: 'u', k: 'var', lines: [67] }, { t: ' = −', k: 'op' }, { t: 'g', k: 'var', lines: [65, 67] }
+    ],
+    mapping: [
+      { sym: 'W', code: 'cost_weight', lines: [63, 64] },
+      { sym: 'H', code: 'self._build_hessian(W)', lines: [64, 67] },
+      { sym: 'g', code: 'self._build_gradient(...)', lines: [65, 67] },
+      { sym: 'u*', code: 'torch.linalg.solve(H, -g)', lines: [67] },
+      { sym: 'N', code: 'self.horizon', lines: [63, 68] },
+      { sym: 'u_max', code: 'clamp(-u_max, u_max)', lines: [69] }
+    ],
+    intuition: '비용이 상태와 입력의 2차식이면 최소점은 미분이 0인 지점 하나뿐입니다. 그래서 반복 최적화 없이 선형 방정식 Hu = −g를 한 번 푸는 것으로 끝납니다. Actor가 바꾸는 W는 이 H와 g의 모양을 바꿔, 결과적으로 해의 위치를 옮깁니다.',
+    example: 'W[0, 0] = [10.0, 2.0, 55.0, 0.1, 0.5]\n         (추적, 자세, 접촉력, 입력, 평활)\n\n접촉력 가중치가 55로 크므로\nH의 해당 블록 대각항이 커지고,\nu*는 접촉력 오차를 줄이는 방향으로 이동합니다.',
+    shape: [
+      { name: 'cost_weight', shape: '[B, 6, 5]', op: '↓ _build_hessian', cert: 'stat', lines: [63] },
+      { name: 'H', shape: '[B, 72, 72]', op: '↓ linalg.solve(H, −g)', cert: 'infer', lines: [64, 67] },
+      { name: 'u_seq (flat)', shape: '[B, 72]', op: '↓ view(-1, 6, 12)', cert: 'infer', lines: [67, 68] },
+      { name: 'u_seq', shape: '[B, 6, 12]', op: '↓ clamp → return', cert: 'stat', lines: [68, 69] }
+    ],
+    dims: [{ k: '72', v: '6 (horizon) × 12 (관절 토크)' }, { k: '6', v: 'MPC prediction horizon' }, { k: '12', v: '관절 수' }],
+    flow: [
+      { name: 'apply_phase_prior()', file: 'control/mpc.py', role: '이전', edge: 'cost_weight [B, 6, 5]', link: 'fwd' },
+      { name: 'MPCSolver.solve()', file: 'control/mpc.py', role: '현재', edge: 'u_seq [B, 6, 12]', link: 'solve' },
+      { name: 'env.step()', file: 'envs/quadruped.py', role: '다음', edge: 'u_seq[:, 0] [B, 12]', link: null }
+    ],
+    issues: [
+      { severity: 'Critical', title: 'H가 singular할 때 torch.linalg.solve가 실패합니다', evidence: 'control/mpc.py 67줄', impact: 'Actor가 특정 cost weight를 0에 가깝게 만들면 H의 해당 블록이 rank를 잃습니다. 정칙화 항 없이 바로 solve를 호출하고 있습니다.' },
+      { severity: 'Warning', title: 'clamp가 최적성을 깨뜨립니다', evidence: 'control/mpc.py 69줄', impact: '해를 구한 뒤 잘라내므로 제약을 반영한 해가 아닙니다. 포화가 잦으면 실제 동작이 예측과 달라집니다.' }
+    ]
+  },
+  {
+    id: 'ppo', name: 'PPOTrainer.update()', qual: 'train/ppo.py / PPOTrainer.update()', file: 'train/ppo.py', lines: '88–99',
+    oneLine: '수집한 rollout으로 정책을 한 번 업데이트합니다. 변화폭은 clip으로 제한됩니다.',
+    systemRole: '제어 루프 바깥에서 주기적으로 호출됩니다. Actor의 파라미터를 바꾸므로, 이후 forward()의 출력이 달라집니다.',
+    chain: ['run', 'store', 'update', 'forward'],
+    cert: 'stat',
+    code: [
+      [88, '    def update(self):', null],
+      [89, '        obs, act, adv, logp_old = self.buffer.get()', null],
+      [90, '        for _ in range(self.n_epochs):', null],
+      [91, '            logp = self.actor.log_prob(obs, act)', null],
+      [92, '            ratio = torch.exp(logp - logp_old)', 'r_t(θ)'],
+      [93, '            clipped = torch.clamp(ratio, 1 - self.eps, 1 + self.eps)', 'clip'],
+      [94, '            loss = -torch.min(ratio * adv, clipped * adv).mean()', 'L^CLIP'],
+      [95, '', null],
+      [96, '            self.optim.zero_grad()', null],
+      [97, '            loss.backward()', null],
+      [98, '            self.optim.step()', null],
+      [99, '        self.buffer.clear()', null]
+    ],
+    inputs: [{ name: 'self.buffer', type: 'RolloutBuffer', shape: '[T, B, …]', meaning: '제어 루프에서 store()로 쌓인 관측·행동·advantage·이전 log 확률입니다.', originLabel: '생성 위치', origin: 'PPOTrainer.store()', cert: 'stat', lines: [89] }],
+    outputs: [{ name: '(없음)', type: 'None', shape: '—', meaning: '반환값이 없습니다. 부작용으로 actor 파라미터가 갱신되고 버퍼가 비워집니다.', originLabel: '부작용', origin: 'self.optim.step()', cert: 'verified', lines: [98, 99] }],
+    mathOk: true,
+    tokens: [
+      { t: 'L', k: 'var', lines: [94] }, { t: 'CLIP', k: 'sup', lines: [94] },
+      { t: ' = 𝔼[ min( ', k: 'op' },
+      { t: 'r', k: 'var', lines: [92] }, { t: 't', k: 'sub' }, { t: '(θ) ', k: 'op' },
+      { t: 'A', k: 'var', lines: [94] }, { t: 't', k: 'sub' },
+      { t: ',  clip(', k: 'op' }, { t: 'r', k: 'var', lines: [92] }, { t: 't', k: 'sub' },
+      { t: '(θ), 1−ε, 1+ε) ', k: 'op', lines: [93] },
+      { t: 'A', k: 'var', lines: [94] }, { t: 't', k: 'sub' }, { t: ' ) ]', k: 'op' }
+    ],
+    mapping: [
+      { sym: 'r_t(θ)', code: 'exp(logp - logp_old)', lines: [92] },
+      { sym: 'A_t', code: 'adv', lines: [89, 94] },
+      { sym: 'ε', code: 'self.eps', lines: [93] },
+      { sym: 'L', code: 'loss (부호 반전)', lines: [94] }
+    ],
+    intuition: '새 정책이 옛 정책보다 얼마나 달라졌는지를 확률의 비율로 재고, 그 비율을 1±ε 안으로 자릅니다. 좋은 행동이라도 한 번에 너무 크게 밀어붙이지 않게 하는 안전장치입니다.',
+    example: 'logp_old = −1.20,  logp = −0.90\nratio    = exp(0.30) ≈ 1.35\neps      = 0.2  →  clip 범위 [0.8, 1.2]\n\nadv > 0 이면 min(1.35A, 1.2A) = 1.2A\n→ 이득이 1.2배까지만 반영됩니다.',
+    shape: [
+      { name: 'logp', shape: '[T·B]', op: '↓ exp(logp − logp_old)', cert: 'infer', lines: [91, 92] },
+      { name: 'ratio', shape: '[T·B]', op: '↓ clamp(1−ε, 1+ε)', cert: 'stat', lines: [92, 93] },
+      { name: 'loss', shape: 'scalar', op: '↓ backward()', cert: 'verified', lines: [94, 97] }
+    ],
+    dims: [{ k: 'T', v: 'rollout 길이 — 실행 시 결정' }, { k: 'B', v: '병렬 환경 수' }],
+    flow: [
+      { name: 'run()', file: 'main.py:29', role: '호출자', edge: 'update_every 주기', link: 'run' },
+      { name: 'PPOTrainer.update()', file: 'train/ppo.py', role: '현재', edge: 'actor 파라미터 갱신', link: 'ppo' },
+      { name: 'AdaptiveCostActor.forward()', file: 'models/actor.py', role: '영향', edge: '다음 스텝부터 출력 변화', link: 'fwd' }
+    ],
+    issues: [{ severity: 'Warning', title: 'advantage 정규화가 보이지 않습니다', evidence: 'train/ppo.py 89, 94줄', impact: 'adv 스케일이 크면 clip 범위 안에서도 gradient가 과도해져 학습이 불안정해질 수 있습니다.' }]
+  }
+];
+
+// fnId::varName -> dtype / 단위 / 값 범위 / 기본값
+const META = {
+  'fwd::observation': { dtype: 'float32', unit: '무차원 (정규화)', range: '대략 −3 ~ 3', def: '—' },
+  'fwd::residual': { dtype: 'float32', unit: '무차원 (가중치 배수)', range: '−s ~ +s', def: 's = 2.0' },
+  'obs::robot': { dtype: 'float32', unit: 'rad, rad/s', range: '관절 한계 내', def: '—' },
+  'obs::obj': { dtype: 'float32', unit: 'm (추정)', range: '작업 공간 내', def: '—' },
+  'obs::obs': { dtype: 'float32', unit: '무차원', range: '대략 −3 ~ 3', def: '—' },
+  'solve::x0': { dtype: 'float32', unit: '혼합 (rad, m)', range: '상태 한계 내', def: '—' },
+  'solve::cost_weight': { dtype: 'float32', unit: '무차원', range: '0.1 ~ 60', def: 'phase prior' },
+  'solve::u_seq': { dtype: 'float32', unit: 'N·m', range: '±u_max', def: 'u_max = 40' },
+  'phase::residual': { dtype: 'float32', unit: '무차원', range: '−s ~ +s', def: '—' },
+  'phase::phase': { dtype: 'str (enum)', unit: '—', range: 'PRE / CONTACT / POST / FAILED', def: 'PRE_CONTACT' },
+  'phase::weight': { dtype: 'float32', unit: '무차원', range: '1e-3 ~ 60', def: '—' },
+  'run::cfg_path': { dtype: 'str', unit: '—', range: '파일 경로', def: 'configs/default.yaml' },
+  'ppo::self.buffer': { dtype: 'float32 / int64', unit: '혼합', range: '버퍼 용량 이내', def: 'capacity = 2048' }
+};
+
+// 부작용 / 주의점 / 표현 방식 분류
+const EXTRA = {
+  run: {
+    repr: '실행 순서 설명',
+    side: ['env.step()으로 시뮬레이터 상태를 진행시킵니다', 'actor 파라미터가 trainer.update()로 갱신됩니다', 'save_checkpoint()가 디스크에 파일을 씁니다'],
+    warn: ['done 처리와 update_every 주기가 어긋나면 일부 transition이 버려집니다', 'cfg 값이 바뀌면 obs_dim·horizon이 함께 바뀌므로 체크포인트 호환성이 깨집니다']
+  },
+  obs: {
+    repr: '텐서 구성식 + 정규화',
+    side: ['NaN이 있으면 ValueError를 raise합니다 (제어 루프 중단)'],
+    warn: ['OBS_STD에 0이 섞이면 1e-6만으로는 스케일이 폭주할 수 있습니다', '슬라이스 q[:, :8]로 관절 4개의 위치 정보가 관측에서 빠집니다', '단위가 섞인 벡터라 정규화 상수가 환경에 강하게 종속됩니다']
+  },
+  fwd: {
+    repr: 'LaTeX 수식 (아핀 변환 + 비선형)',
+    side: ['없음 — 순수 함수입니다. 내부 상태를 바꾸지 않습니다'],
+    warn: ['tanh가 두 번 적용되어 gradient가 쉽게 포화됩니다', 'view(-1, ...)는 batch 차원을 추론하므로 입력이 3차원이면 조용히 잘못 접힙니다', 'self.scale이 Parameter인지 상수인지 코드에 드러나지 않습니다']
+  },
+  phase: {
+    repr: 'Piecewise function + 상태 다이어그램',
+    side: ['self.phase를 갱신합니다 (객체 내부 상태 변경)', '전환 발생 시 로그를 기록합니다'],
+    warn: ['전환 순간 가중치가 불연속으로 점프합니다', 'FAILED에서 빠져나오는 경로가 없어 리셋 전까지 고정됩니다', 'force_limit이 하드코딩되어 있습니다']
+  },
+  solve: {
+    repr: '행렬식 + 최적화 stationary point',
+    side: ['없음 — 새 텐서를 반환합니다'],
+    warn: ['H가 singular하면 예외가 발생합니다 (정칙화 없음)', 'clamp가 해를 구한 뒤 적용되어 제약을 반영한 최적해가 아닙니다', 'float32에서 72×72 solve는 조건수가 나쁘면 정밀도가 떨어집니다']
+  },
+  ppo: {
+    repr: 'LaTeX 수식 (기대값 + clip)',
+    side: ['actor 파라미터를 갱신합니다', 'optimizer 내부 모멘텀 상태가 바뀝니다', 'buffer를 비웁니다'],
+    warn: ['advantage 정규화가 없어 스케일에 민감합니다', 'n_epochs가 크면 ratio가 clip 경계 밖으로 크게 벗어납니다', 'entropy 항이 없어 조기 수렴 가능성이 있습니다']
+  }
+};
+
+const STEPS = [
+  { key: 'overview', label: '개요', kicker: '① 이 함수는 무엇을 하는가' },
+  { key: 'io', label: '입출력', kicker: '② 무엇을 받고 무엇을 내보내는가' },
+  { key: 'math', label: '수식', kicker: '③ 계산을 수식으로 쓰면' },
+  { key: 'shape', label: 'Shape', kicker: '④ 차원은 어떻게 변하는가' },
+  { key: 'flow', label: '흐름', kicker: '⑤ 앞뒤로 어떻게 이어지는가' },
+  { key: 'review', label: '리뷰', kicker: '⑥ 이제 문제를 본다' }
+];
+
+const ANSWERS = {
+  '왜 필요한가?': '이 계산이 없으면 MPC는 항상 같은 고정 가중치로 문제를 풉니다. 접촉 전/후처럼 상황이 크게 달라지는 구간에서 같은 비용 기준을 쓰면, 접촉 순간의 힘 오차를 충분히 벌하지 못합니다.\n\n근거: control/mpc.py 64줄 — H가 W로부터 만들어집니다.',
+  '더 쉽게 설명': '요리로 비유하면, MPC는 레시피를 푸는 계산기이고 이 함수는 "지금은 소금을 더 중요하게 봐"라고 옆에서 알려주는 역할입니다. 재료(관측)를 보고 각 항목의 중요도를 조금씩 조정합니다.',
+  '숫자 예시': 'observation[0, :3] = [0.80, −0.12, 0.35]\n→ h = tanh(W₁o + b₁), 값은 −1~1\n→ raw = [B, 30]\n→ reshape → [B, 6, 5]\n→ Δw[0, 0] = [0.42, −0.18, 0.05, 0.31, −0.09] × s',
+  '수식 유도': 'Linear는 아핀 변환 Wx + b입니다. 두 층을 이으면 W₂ tanh(W₁o + b₁) + b₂ 가 되고, view(-1, 6, 5)는 값을 바꾸지 않는 재배열이므로 reshape 연산자로 표기합니다. 마지막 tanh와 곱셈은 출력 범위를 ±s로 제한합니다.',
+  '없으면 어떻게 되는가?': '이 함수를 빼면 MPC는 고정 가중치로만 돌아갑니다. 접촉 전후 상황이 달라져도 같은 비용 기준을 쓰게 되어, 접촉 순간의 힘 오차를 충분히 벌하지 못합니다.\n\n또한 학습 신호가 갈 곳이 없어져 Actor의 gradient가 0이 됩니다 — 프로젝트의 핵심 아이디어 자체가 사라집니다.',
+  '입력이 커지면?': 'observation의 절댓값이 커지면 W₁o가 커지고 tanh가 포화합니다. h가 ±1에 붙으면 기울기 1 − tanh²h → 0이 되어 학습이 멈춥니다.\n\n정규화(envs/observation.py 26줄)가 이 문제를 막는 장치입니다. OBS_STD가 실제 분포와 맞지 않으면 여기서 바로 문제가 드러납니다.',
+  'shape가 왜?': 'view(-1, 6, 5)에서 6은 self.horizon, 5는 self.n_cost입니다 (models/actor.py 38줄).\n\nfc2의 출력이 horizon × n_cost = 30이므로 원소 수가 정확히 맞아 재배열만 일어납니다. −1은 batch 차원을 나머지에서 추론한다는 뜻입니다.',
+  '물리적 의미': 'residual[b, t, j]는 "배치 b에서, MPC가 예측하는 t번째 시점의, j번째 비용 항목을 얼마나 더 중요하게 볼지"입니다.\n\n5개 항목은 추적·자세·접촉력·입력 크기·평활입니다. 단위는 없고, 기준 가중치에 더해지는 무차원 배수입니다.',
+  '앞 함수 보기': null,
+  '다음 함수 보기': null,
+  '문제점 확인': null
+};
+
+class Component extends DCLogic {
+  state = {
+    screen: 'landing', fnId: 'fwd', step: 0, mode: 'learning',
+    hl: null, tip: null, showExample: false, openIssue: null,
+    chat: [], draft: '', navOpen: false, uploadTab: 'file', hasFiles: false,
+    progress: 0, done: {}, navTab: 'path', mapFilter: '데이터 흐름',
+    reviewSel: 0, copied: false
+  };
+
+  componentWillUnmount() { clearInterval(this._t); }
+
+  go = (screen) => {
+    clearInterval(this._t);
+    this.setState({ screen, navOpen: false });
+    if (screen === 'progress') this.runProgress();
+    window.scrollTo(0, 0);
+  };
+
+  runProgress = () => {
+    this.setState({ progress: 0 });
+    this._t = setInterval(() => {
+      this.setState(s => {
+        const p = s.progress + 1;
+        if (p > 6) { clearInterval(this._t); this.go('overview'); return { progress: 6 }; }
+        return { progress: p };
+      });
+    }, 780);
+  };
+
+  fn = () => FUNCS.find(f => f.id === this.state.fnId) || FUNCS[2];
+
+  selectFn = (id) => this.setState({ fnId: id, step: 0, hl: null, openIssue: null, showExample: false, chat: [], screen: 'workspace' });
+
+  setHl = (lines, label) => this.setState({ hl: { lines: lines || [], label: label || '' } });
+
+  ask = (q) => {
+    const a = ANSWERS[q];
+    if (q === '앞 함수 보기') { const p = this.prevFn(); if (p) this.selectFn(p); return; }
+    if (q === '다음 함수 보기') { const n = this.nextFn(); if (n) this.selectFn(n); return; }
+    if (q === '문제점 확인') { this.setState({ step: 5 }); return; }
+    this.setState(s => ({
+      chat: s.chat.concat([{ role: 'user', text: q }, { role: 'ai', text: a || '현재 선택한 함수의 문맥을 첨부해 답변합니다. 근거 코드 위치를 함께 표시합니다.' }])
+    }));
+  };
+
+  prevFn = () => { const i = FUNCS.findIndex(f => f.id === this.state.fnId); return i > 0 ? FUNCS[i - 1].id : null; };
+  nextFn = () => { const i = FUNCS.findIndex(f => f.id === this.state.fnId); return i < FUNCS.length - 1 ? FUNCS[i + 1].id : null; };
+
+  tokenize(text) {
+    if (!text) return [{ t: ' ', c: '#1D1D1F', i: 'normal' }];
+    const ci = text.indexOf('#');
+    let body = text, comment = null;
+    if (ci >= 0 && !text.slice(0, ci).includes('"')) { body = text.slice(0, ci); comment = text.slice(ci); }
+    const out = [];
+    const re = /("""[^]*?"""|"[^"]*"|'[^']*'|[A-Za-z_][A-Za-z0-9_]*|\d+\.?\d*|\s+|.)/g;
+    let m;
+    while ((m = re.exec(body))) {
+      const t = m[0];
+      let c = '#1D1D1F', i = 'normal';
+      if (/^["']/.test(t)) { c = '#C7361B'; if (t.startsWith('"""')) { c = '#5D6C79'; i = 'normal'; } }
+      else if (KW.test(t)) c = '#9B2393';
+      else if (/^\d/.test(t)) c = '#1C6FD9';
+      else if (/^[A-Za-z_]/.test(t)) {
+        const after = body.slice(m.index + t.length);
+        if (/^\s*\(/.test(after)) c = '#0B7285';
+        else if (/^(torch|nn|np|cfg|self)$/.test(t)) c = '#5C2699';
+      }
+      out.push({ t, c, i });
+    }
+    if (comment) out.push({ t: comment, c: '#5D6C79', i: 'italic' });
+    return out.length ? out : [{ t: ' ', c: '#1D1D1F', i: 'normal' }];
+  }
+
+  certOf(k, extra) {
+    const c = C[k] || C.stat;
+    return { cert: c.label, certFg: c.fg, certDot: c.dot, certBg: c.bg, tipText: c.tip, tipOpen: this.state.tip === extra, tipOn: () => this.setState({ tip: extra }) };
+  }
+
+  buildCard(stepIdx) {
+    const f = this.fn(), st = STEPS[stepIdx], s = this.state;
+    const clear = () => this.setState({ hl: null });
+    const base = { kicker: st.kicker, ...this.certOf(f.cert, 'card' + stepIdx) };
+    base.isOverview = st.key === 'overview'; base.isIO = st.key === 'io'; base.isMath = st.key === 'math';
+    base.isShape = st.key === 'shape'; base.isFlow = st.key === 'flow'; base.isReview = st.key === 'review';
+
+    if (base.isOverview) {
+      base.oneLine = f.oneLine; base.systemRole = f.systemRole;
+      base.chain = f.chain.map((n, i) => ({ name: n, arrow: i < f.chain.length - 1 ? '→' : '', bg: n === f.name.replace('()', '').split('.').pop() || false ? 'rgba(120,120,128,.1)' : 'rgba(120,120,128,.1)', fg: 'rgba(60,60,67,.7)' }));
+      const cur = f.name.replace('()', '').split('.').pop();
+      base.chain.forEach(n => { if (n.name === cur) { n.bg = 'rgba(0,122,255,.12)'; n.fg = '#0062CC'; } });
+    }
+    if (base.isIO) {
+      const mk = (v, kind, idx) => ({
+        ...v, ...this.certOf(v.cert, kind + idx),
+        meta: META[f.id + '::' + v.name] ? [
+          { k: 'dtype', v: META[f.id + '::' + v.name].dtype },
+          { k: '단위', v: META[f.id + '::' + v.name].unit },
+          { k: '값 범위', v: META[f.id + '::' + v.name].range },
+          { k: '기본값', v: META[f.id + '::' + v.name].def }
+        ] : [],
+        hasMeta: !!META[f.id + '::' + v.name],
+        border: s.hl && v.lines.some(l => s.hl.lines.includes(l)) ? 'rgba(0,122,255,.5)' : 'rgba(84,84,86,.14)',
+        bg: s.hl && v.lines.some(l => s.hl.lines.includes(l)) ? 'rgba(0,122,255,.04)' : '#fff',
+        enter: () => this.setHl(v.lines, v.name + ' 근거'),
+        jump: () => this.setHl(v.lines, v.origin)
+      });
+      base.inputs = f.inputs.map((v, i) => mk(v, 'in', i));
+      base.outputs = f.outputs.map((v, i) => mk(v, 'out', i));
+      base.side = (EXTRA[f.id] || {}).side || [];
+    }
+    if (base.isMath) {
+      base.repr = (EXTRA[f.id] || {}).repr || '';
+      base.piecewise = f.piecewise || [];
+      base.hasPiecewise = !!(f.piecewise && f.piecewise.length);
+      base.diagram = f.diagram || [];
+      base.hasDiagram = !!(f.diagram && f.diagram.length);
+      base.mathOk = !!f.mathOk; base.mathNo = !f.mathOk;
+      base.mathNoReason = f.mathNoReason; base.sequence = f.sequence || [];
+      base.intuition = f.intuition; base.example = f.example;
+      base.showExample = s.showExample;
+      base.exampleLabel = s.showExample ? '숫자 예시 접기' : '숫자 예시로 확인하기';
+      base.toggleExample = () => this.setState(p => ({ showExample: !p.showExample }));
+      base.tokens = (f.tokens || []).map(tk => {
+        const on = s.hl && tk.lines && tk.lines.some(l => s.hl.lines.includes(l));
+        return {
+          t: tk.t,
+          style: tk.k === 'var' || tk.k === 'sub' || tk.k === 'sup' ? 'italic' : 'normal',
+          size: tk.k === 'sub' || tk.k === 'sup' ? '0.6em' : '1em',
+          va: tk.k === 'sub' ? 'sub' : tk.k === 'sup' ? 'super' : 'baseline',
+          bg: on ? 'rgba(255,204,0,.42)' : 'transparent',
+          cursor: tk.lines ? 'pointer' : 'default',
+          enter: () => tk.lines && this.setHl(tk.lines, tk.t + ' → 코드')
+        };
+      });
+      base.mapping = (f.mapping || []).map(m => ({
+        ...m,
+        bg: s.hl && m.lines.some(l => s.hl.lines.includes(l)) ? 'rgba(255,204,0,.28)' : 'rgba(120,120,128,.07)',
+        enter: () => this.setHl(m.lines, m.sym + ' ↔ ' + m.code)
+      }));
+    }
+    if (base.isShape) {
+      base.shape = f.shape.map(x => {
+        const c = C[x.cert];
+        const on = s.hl && x.lines.some(l => s.hl.lines.includes(l));
+        return { ...x, cert: c.label, certFg: c.fg, certBg: c.bg, shapeFg: x.cert === 'infer' || x.cert === 'runtime' ? '#C93400' : '#0062CC', bg: on ? 'rgba(0,122,255,.06)' : '#FCFCFD', border: on ? 'rgba(0,122,255,.4)' : 'rgba(84,84,86,.12)', enter: () => this.setHl(x.lines, x.name + ' ' + x.shape) };
+      });
+      base.dims = f.dims;
+    }
+    if (base.isFlow) {
+      base.flow = f.flow.map(x => ({
+        ...x,
+        border: x.role === '현재' ? 'rgba(0,122,255,.45)' : 'rgba(84,84,86,.14)',
+        bg: x.role === '현재' ? 'rgba(0,122,255,.06)' : '#fff',
+        nameFg: x.role === '현재' ? '#0062CC' : '#1D1D1F',
+        cursor: x.link ? 'pointer' : 'default',
+        click: () => x.link && this.selectFn(x.link)
+      }));
+    }
+    if (base.isReview) {
+      base.warn = (EXTRA[f.id] || {}).warn || [];
+      base.issues = f.issues.map((i, idx) => {
+        const sev = i.severity === 'Critical' ? { fg: '#D70015', bg: 'rgba(255,59,48,.14)', bd: 'rgba(255,59,48,.3)', card: 'rgba(255,59,48,.04)' }
+          : i.severity === 'Warning' ? { fg: '#C93400', bg: 'rgba(255,149,0,.16)', bd: 'rgba(255,149,0,.3)', card: 'rgba(255,149,0,.04)' }
+            : { fg: '#0062CC', bg: 'rgba(0,122,255,.12)', bd: 'rgba(84,84,86,.14)', card: '#fff' };
+        return { ...i, sevFg: sev.fg, sevBg: sev.bg, border: sev.bd, bg: sev.card, open: s.openIssue === idx, chev: s.openIssue === idx ? '⌄' : '›', toggle: () => this.setState(p => ({ openIssue: p.openIssue === idx ? null : idx })) };
+      });
+    }
+    return base;
+  }
+
+  renderVals() {
+    const s = this.state, f = this.fn();
+    const scr = s.screen;
+    const clearHl = () => this.setState({ hl: null });
+    const V = {
+      isLanding: scr === 'landing', isDashboard: scr === 'dashboard', isUpload: scr === 'upload',
+      isProgress: scr === 'progress', isOverview: scr === 'overview', isWorkspace: scr === 'workspace',
+      isMap: scr === 'map', isReview: scr === 'review', isErrors: scr === 'errors',
+      goLanding: () => this.go('landing'), goDashboard: () => this.go('dashboard'), goUpload: () => this.go('upload'),
+      goOverview: () => this.go('overview'), goMap: () => this.go('map'), goReview: () => this.go('review'),
+      goWorkspace: () => this.go('workspace'),
+      goDemo: () => { this.setState({ fnId: 'fwd', step: 0 }); this.go('overview'); },
+      clearHl, tipOff: () => this.setState({ tip: null }),
+      navOpen: s.navOpen, navLabel: s.navOpen ? '화면 목록 닫기' : '화면 목록',
+      toggleNav: () => this.setState(p => ({ navOpen: !p.navOpen }))
+    };
+
+    V.screenList = [
+      ['landing', 'Landing'], ['dashboard', 'Dashboard'], ['upload', '업로드'], ['progress', '분석 진행'],
+      ['overview', 'Project Overview'], ['workspace', 'Code Workspace'], ['map', '프로젝트 지도'],
+      ['review', '코드 리뷰 · Diff'], ['errors', '예외 상태']
+    ].map(([k, label]) => ({
+      label, go: () => this.go(k),
+      bg: scr === k ? 'rgba(0,122,255,.12)' : 'transparent',
+      fg: scr === k ? '#0062CC' : 'rgba(60,60,67,.85)',
+      weight: scr === k ? '600' : '500',
+      dot: scr === k ? '#007AFF' : 'rgba(60,60,67,.25)'
+    }));
+
+    // dashboard
+    V.projects = [
+      { name: 'quadruped-rl-mpc', meta: 'Python 14개 파일 · 함수 63개 · 2일 전', status: '분석 완료', statusBg: 'rgba(52,199,89,.14)', statusFg: '#248A3D', initial: 'Q', tint: '#007AFF', tintBg: 'rgba(0,122,255,.12)', open: () => this.go('overview') },
+      { name: 'bimanual-diffusion', meta: 'Python 31개 파일 · 함수 142개 · 5일 전', status: 'AI 분석 중', statusBg: 'rgba(0,122,255,.12)', statusFg: '#0062CC', initial: 'B', tint: '#AF52DE', tintBg: 'rgba(175,82,222,.12)', open: () => this.go('progress') },
+      { name: 'legacy-arm-controller', meta: 'Python 9개 파일 · 함수 41개 · 3주 전', status: '일부 실패', statusBg: 'rgba(255,149,0,.16)', statusFg: '#C93400', initial: 'L', tint: '#FF9500', tintBg: 'rgba(255,149,0,.12)', open: () => this.go('errors') },
+      { name: 'sim2real-eval', meta: 'Python 6개 파일 · 함수 22개 · 1달 전', status: '분석 완료', statusBg: 'rgba(52,199,89,.14)', statusFg: '#248A3D', initial: 'S', tint: '#34C759', tintBg: 'rgba(52,199,89,.12)', open: () => this.go('overview') }
+    ];
+
+    // upload
+    V.uploadTabs = [['file', '파일 업로드'], ['zip', 'ZIP'], ['git', 'GitHub URL']].map(([k, label]) => ({
+      label, select: () => this.setState({ uploadTab: k }),
+      bg: s.uploadTab === k ? '#fff' : 'transparent', fg: s.uploadTab === k ? '#000' : 'rgba(60,60,67,.6)',
+      weight: s.uploadTab === k ? '600' : '500'
+    }));
+    V.uploadTabs.forEach(t => { if (t.bg === '#fff') t.bg = 'rgba(0,122,255,.12)'; });
+    V.uploadIsFile = s.uploadTab === 'file' || s.uploadTab === 'zip';
+    V.uploadIsGit = s.uploadTab === 'git';
+    V.hasFiles = s.hasFiles;
+    V.pickFiles = () => this.setState({ hasFiles: true });
+    V.analyzeBg = s.hasFiles ? '#007AFF' : 'rgba(0,122,255,.4)';
+    V.startAnalysis = () => this.go('progress');
+    V.pickedFiles = [
+      { mark: '✓', path: 'main.py', note: '2.1 KB', color: 'rgba(60,60,67,.85)' },
+      { mark: '✓', path: 'models/actor.py', note: '4.4 KB', color: 'rgba(60,60,67,.85)' },
+      { mark: '✓', path: 'control/mpc.py', note: '7.8 KB', color: 'rgba(60,60,67,.85)' },
+      { mark: '✓', path: 'envs/observation.py', note: '3.0 KB', color: 'rgba(60,60,67,.85)' },
+      { mark: '✕', path: 'notes.ipynb', note: '지원하지 않는 형식', color: '#C93400' }
+    ];
+
+    // progress
+    const stepDefs = [
+      ['파일 검증', '14개 파일'], ['Python 구조 분석', 'AST'], ['함수와 클래스 추출', '63 / 8'],
+      ['호출 관계 생성', '112 edges'], ['데이터 흐름 분석', 'tensor 추적'], ['AI 설명 생성', 'GPU 대기 없음']
+    ];
+    V.steps = stepDefs.map(([label, detail], i) => {
+      const doneS = i < s.progress, cur = i === s.progress;
+      return {
+        label, detail: doneS ? detail : cur ? '진행 중' : '대기',
+        mark: doneS ? '✓' : cur ? '' : '',
+        dotBg: doneS ? '#34C759' : cur ? 'rgba(0,122,255,.9)' : 'rgba(120,120,128,.18)',
+        dotFg: '#fff',
+        dotAnim: cur ? 'animation:pulseDot 1s ease-in-out infinite' : '',
+        weight: cur ? '600' : '500',
+        color: doneS || cur ? '#000' : 'rgba(60,60,67,.45)'
+      };
+    });
+    V.progressPct = Math.round((s.progress / 6) * 100) + '%';
+
+    // overview
+    V.overviewStats = [
+      { value: '13', label: '분석된 파일', color: '#000' },
+      { value: '8', label: '클래스', color: '#000' },
+      { value: '63', label: '함수', color: '#000' },
+      { value: 'main.py', label: '진입점 후보', color: '#007AFF' },
+      { value: '높음', label: '분석 확실성', color: '#248A3D' }
+    ];
+    V.learningPath = FUNCS.map((fn, i) => ({
+      num: i + 1, qual: fn.qual, why: [
+        '프로그램의 전체 실행 순서가 여기서 시작합니다. 나머지 함수는 모두 이 루프 안에서 호출됩니다.',
+        'Actor가 무엇을 보는지 알아야 이후 계산의 의미를 알 수 있습니다. 관측 차원 24의 출처입니다.',
+        '이 프로젝트의 핵심 아이디어입니다. 정책이 행동이 아니라 비용 가중치를 출력합니다.',
+        '조건문이 상태 전이로 바뀌는 지점입니다. 학습된 값과 사람이 정한 기준이 여기서 합쳐집니다.',
+        '가중치가 실제 제어 입력으로 바뀌는 지점입니다. 수식이 가장 뚜렷하게 드러납니다.',
+        '정책이 어떻게 개선되는지, 학습 루프 쪽을 마지막으로 봅니다.'
+      ][i],
+      time: ['5분', '3분', '6분', '4분', '5분', '3분'][i],
+      bg: s.done[fn.id] ? 'rgba(52,199,89,.06)' : '#FCFCFD',
+      border: s.done[fn.id] ? 'rgba(52,199,89,.3)' : 'rgba(84,84,86,.12)',
+      numBg: s.done[fn.id] ? '#34C759' : 'rgba(0,122,255,.12)',
+      numFg: s.done[fn.id] ? '#fff' : '#0062CC',
+      open: () => this.selectFn(fn.id)
+    }));
+    V.globalFlow = [
+      { name: 'robot_state', shape: '', dot: 'rgba(60,60,67,.35)' },
+      { name: 'observation', shape: '[B, 24]', dot: '#34C759' },
+      { name: 'weight_residual', shape: '[B, 6, 5]', dot: '#007AFF' },
+      { name: 'cost_weight', shape: '[B, 6, 5]', dot: '#AF52DE' },
+      { name: 'control_sequence', shape: '[B, 6, 12]', dot: '#FF9500' }
+    ];
+
+    // workspace
+    V.fnFile = f.file; V.fnQual = f.qual; V.fnLineRange = f.lines;
+    V.isLearningMode = s.mode === 'learning';
+    V.setLearning = () => this.setState({ mode: 'learning' });
+    V.setExpert = () => this.setState({ mode: 'expert' });
+    V.learnBg = s.mode === 'learning' ? '#fff' : 'transparent';
+    V.expertBg = s.mode === 'expert' ? '#fff' : 'transparent';
+    V.learnShadow = s.mode === 'learning' ? '0 3px 8px rgba(0,0,0,.10)' : 'none';
+    V.expertShadow = s.mode === 'expert' ? '0 3px 8px rgba(0,0,0,.10)' : 'none';
+    V.learnWeight = s.mode === 'learning' ? '600' : '500';
+    V.expertWeight = s.mode === 'expert' ? '600' : '500';
+
+    V.navTabs = [['files', '파일'], ['fns', '함수'], ['path', '추천 순서']].map(([k, label]) => ({
+      label, select: () => this.setState({ navTab: k }),
+      bg: s.navTab === k ? 'rgba(0,122,255,.12)' : 'transparent',
+      fg: s.navTab === k ? '#0062CC' : 'rgba(60,60,67,.6)',
+      weight: s.navTab === k ? '600' : '500'
+    }));
+
+    const item = (label, opts) => Object.assign({
+      icon: '', iconColor: 'rgba(60,60,67,.4)', indent: '0px', badge: '', badgeFg: 'rgba(60,60,67,.4)',
+      weight: '500', color: 'rgba(60,60,67,.85)', bg: 'transparent', font: '-apple-system,Pretendard,sans-serif',
+      cursor: 'default', click: () => { }, label
+    }, opts);
+    const fnItem = (fn, extra) => item(fn.name, Object.assign({
+      icon: 'ƒ', iconColor: '#AF52DE', font: "'JetBrains Mono',monospace", cursor: 'pointer',
+      indent: '14px', click: () => this.selectFn(fn.id),
+      bg: s.fnId === fn.id ? 'rgba(0,122,255,.12)' : 'transparent',
+      color: s.fnId === fn.id ? '#0062CC' : 'rgba(60,60,67,.85)',
+      weight: s.fnId === fn.id ? '700' : '500',
+      badge: s.done[fn.id] ? '✓' : '', badgeFg: '#34C759'
+    }, extra || {}));
+
+    if (s.navTab === 'files') {
+      V.navItems = [
+        item('main.py', { icon: '▸', font: "'JetBrains Mono',monospace" }), fnItem(FUNCS[0]),
+        item('envs/', { icon: '▾', weight: '600' }), fnItem(FUNCS[1]),
+        item('models/', { icon: '▾', weight: '600' }), fnItem(FUNCS[2]),
+        item('control/', { icon: '▾', weight: '600' }), fnItem(FUNCS[3]),
+        item('train/', { icon: '▾', weight: '600' }), fnItem(FUNCS[4]),
+        item('legacy_controller.py', { icon: '!', iconColor: '#FF3B30', color: 'rgba(60,60,67,.4)', font: "'JetBrains Mono',monospace", badge: 'Syntax', badgeFg: '#C93400' })
+      ];
+    } else if (s.navTab === 'fns') {
+      V.navItems = [
+        item('CLASSES', { weight: '700', color: 'rgba(60,60,67,.45)', indent: '0px' }),
+        item('AdaptiveCostActor', { icon: 'C', iconColor: '#007AFF', font: "'JetBrains Mono',monospace", indent: '8px' }),
+        item('MPCSolver', { icon: 'C', iconColor: '#007AFF', font: "'JetBrains Mono',monospace", indent: '8px' }),
+        item('PPOTrainer', { icon: 'C', iconColor: '#007AFF', font: "'JetBrains Mono',monospace", indent: '8px' }),
+        item('FUNCTIONS', { weight: '700', color: 'rgba(60,60,67,.45)', indent: '0px' })
+      ].concat(FUNCS.map(fn => fnItem(fn, { indent: '8px' })));
+    } else {
+      V.navItems = FUNCS.map((fn, i) => fnItem(fn, { indent: '0px', icon: String(i + 1), iconColor: '#007AFF', label: fn.name }));
+    }
+
+    V.learnDone = Object.keys(s.done).length;
+    V.learnTotal = FUNCS.length;
+    V.learnPct = Math.round((Object.keys(s.done).length / FUNCS.length) * 100) + '%';
+    V.topTabs = [
+      ['map', '프로젝트 지도', null], ['step', '코드 이해', 0], ['step', '수식 보기', 2],
+      ['step', '데이터 흐름', 4], ['review', '코드 리뷰', null]
+    ].map(([kind, label, idx]) => {
+      const active = kind === 'step' && s.mode === 'learning' && s.step === idx;
+      return {
+        label, active,
+        bg: active ? '#fff' : 'transparent',
+        shadow: active ? '0 3px 8px rgba(0,0,0,.10)' : 'none',
+        weight: active ? '600' : '500',
+        fg: active ? '#000' : 'rgba(60,60,67,.65)',
+        go: () => kind === 'step' ? this.setState({ step: idx, openIssue: null }) : this.go(kind)
+      };
+    });
+
+    V.hasHl = !!s.hl; V.hlLabel = s.hl ? s.hl.label : '';
+    V.codeLines = f.code.map(([n, text, ann]) => {
+      const on = s.hl && s.hl.lines.includes(n);
+      return {
+        n, ann: ann || '', annColor: on ? '#C93400' : 'rgba(60,60,67,.28)',
+        bg: on ? 'rgba(255,204,0,.20)' : 'transparent',
+        bar: on ? '#FFCC00' : 'transparent',
+        spans: this.tokenize(text),
+        enter: () => this.setHl([n], 'line ' + n)
+      };
+    });
+
+    V.stepDots = STEPS.map((st, i) => ({
+      label: st.label,
+      bar: i < s.step ? '#34C759' : i === s.step ? '#007AFF' : 'rgba(120,120,128,.2)',
+      color: i === s.step ? '#0062CC' : 'rgba(60,60,67,.5)',
+      weight: i === s.step ? '700' : '500',
+      go: () => this.setState({ step: i, openIssue: null })
+    }));
+    V.stepCounter = s.mode === 'learning' ? (s.step + 1) + ' / 6 단계' : '전체 6개 카드';
+    V.cards = s.mode === 'learning' ? [this.buildCard(s.step)] : STEPS.map((_, i) => this.buildCard(i));
+    V.nextLabel = s.step < 5 ? '이해했어요 — 다음 단계' : '이 함수 학습 완료';
+    V.nextStep = () => {
+      if (s.step < 5) this.setState({ step: s.step + 1, openIssue: null });
+      else {
+        const nx = this.nextFn();
+        this.setState(p => ({ done: Object.assign({}, p.done, { [f.id]: true }) }));
+        if (nx) this.selectFn(nx); else this.go('overview');
+      }
+    };
+
+    V.chips = ['왜 필요한가?', '없으면 어떻게 되는가?', '더 쉽게 설명', '숫자 예시', '수식 유도', 'shape가 왜?', '입력이 커지면?', '물리적 의미', '앞 함수 보기', '다음 함수 보기', '문제점 확인']
+      .map(label => ({ label, ask: () => this.ask(label) }));
+    V.chat = s.chat.map(m => ({
+      text: m.text, justify: m.role === 'user' ? 'flex-end' : 'flex-start',
+      bg: m.role === 'user' ? '#007AFF' : '#fff', fg: m.role === 'user' ? '#fff' : 'rgba(60,60,67,.9)',
+      border: m.role === 'user' ? 'transparent' : 'rgba(84,84,86,.12)'
+    }));
+    V.draft = s.draft;
+    V.setDraft = (e) => this.setState({ draft: e.target.value });
+    V.send = () => { if (s.draft.trim()) { this.ask(s.draft.trim()); this.setState({ draft: '' }); } };
+    V.onKey = (e) => { if (e.key === 'Enter') V.send(); };
+
+    // map
+    V.mapFilters = ['전체', '함수 호출', '데이터 흐름', 'Import 관계'].map(label => ({
+      label, select: () => this.setState({ mapFilter: label }),
+      bg: s.mapFilter === label ? '#007AFF' : '#fff',
+      fg: s.mapFilter === label ? '#fff' : 'rgba(60,60,67,.8)',
+      border: s.mapFilter === label ? '#007AFF' : 'rgba(84,84,86,.2)',
+      weight: s.mapFilter === label ? '600' : '500'
+    }));
+    V.mapNodes = [
+      { name: 'run()', file: 'main.py', tag: '진입점', tagFg: '#248A3D', tagBg: 'rgba(52,199,89,.14)', desc: '설정 로드 후 제어 루프를 돌립니다.', edge: 'robot_state', id: 'run' },
+      { name: 'build_observation()', file: 'envs/observation.py', tag: '어댑터', tagFg: 'rgba(60,60,67,.6)', tagBg: 'rgba(120,120,128,.12)', desc: '상태를 정규화된 24차원 벡터로 합칩니다.', edge: 'observation [B, 24]', id: 'obs' },
+      { name: 'AdaptiveCostActor.forward()', file: 'models/actor.py', tag: '핵심', tagFg: '#0062CC', tagBg: 'rgba(0,122,255,.12)', desc: '관측으로부터 cost weight 변화량을 계산합니다.', edge: 'weight_residual [B, 6, 5]', id: 'fwd' },
+      { name: 'apply_phase_prior()', file: 'control/mpc.py', tag: '보정', tagFg: 'rgba(60,60,67,.6)', tagBg: 'rgba(120,120,128,.12)', desc: 'phase별 기준 가중치에 변화량을 더해 최종 W를 만듭니다.', edge: 'cost_weight [B, 6, 5]', id: 'phase' },
+      { name: 'MPCSolver.solve()', file: 'control/mpc.py', tag: '핵심', tagFg: '#0062CC', tagBg: 'rgba(0,122,255,.12)', desc: '2차 비용을 최소화하는 입력 시퀀스를 계산합니다.', edge: 'control_sequence [B, 6, 12]', id: 'solve' },
+      { name: 'PPOTrainer.update()', file: 'train/ppo.py', tag: '학습', tagFg: '#6B21A8', tagBg: 'rgba(175,82,222,.12)', desc: 'clip된 목적함수로 정책을 갱신합니다.', edge: 'actor 파라미터', id: 'ppo' }
+    ].map(n => ({
+      ...n,
+      dot: n.tag === '핵심' ? '#007AFF' : n.tag === '진입점' ? '#34C759' : n.tag === '학습' ? '#AF52DE' : 'rgba(60,60,67,.35)',
+      border: n.id === s.fnId ? 'rgba(0,122,255,.5)' : 'rgba(84,84,86,.14)',
+      bg: n.id === s.fnId ? 'rgba(0,122,255,.05)' : '#fff',
+      shadow: n.tag === '핵심' ? '0 4px 16px rgba(0,0,0,.06)' : '0 1px 3px rgba(0,0,0,.04)',
+      click: () => this.selectFn(n.id)
+    }));
+
+    // review
+    const ISSUES = [
+      {
+        kind: 'Mathematical', severity: 'Critical', file: 'control/mpc.py:67', title: 'H가 singular할 때 torch.linalg.solve가 실패합니다',
+        sections: [
+          { k: '문제', v: 'Hessian이 rank를 잃으면 solve가 예외를 던지거나 발산하는 해를 냅니다.' },
+          { k: '근거', v: 'control/mpc.py 64–67줄에서 정칙화 없이 H를 그대로 solve에 넘깁니다.' },
+          { k: '현재 동작', v: 'Actor가 특정 cost weight를 0 근처로 만들면 해당 블록의 대각항이 사라집니다.' },
+          { k: '수학적 영향', v: 'H가 양의 정부호가 아니면 최소점이 유일하지 않아 u*가 정의되지 않습니다. λI를 더하면 항상 양의 정부호가 됩니다.' },
+          { k: '예상 효과', v: '해가 항상 존재하고, 가중치가 극단으로 가도 제어가 끊기지 않습니다.' }
+        ],
+        diff: [
+          ['ctx', '        H = self._build_hessian(W)'], ['ctx', '        g = self._build_gradient(x0, x_ref, W)'],
+          ['del', '        u_seq = torch.linalg.solve(H, -g)'],
+          ['add', '        eye = torch.eye(H.shape[-1], device=H.device)'],
+          ['add', '        H = H + self.reg * eye          # reg > 0'],
+          ['add', '        u_seq = torch.linalg.solve(H, -g)'],
+          ['ctx', '        u_seq = u_seq.view(-1, N, self.u_dim)']
+        ],
+        tradeoff: 'reg가 크면 해가 0쪽으로 당겨져 추적 성능이 떨어집니다. 1e-6 ~ 1e-4 범위에서 시작해 보세요.'
+      },
+      {
+        kind: 'Mathematical', severity: 'Warning', file: 'models/actor.py:45', title: '출력에 tanh를 두 번 적용하면 gradient가 포화됩니다',
+        sections: [
+          { k: '문제', v: 'fc1 뒤와 출력 직전 모두 tanh를 씁니다. raw 값이 커지면 기울기가 0에 가까워집니다.' },
+          { k: '근거', v: 'models/actor.py 42줄과 45줄.' },
+          { k: '수학적 영향', v: '∂tanh/∂x = 1 − tanh²x 이므로 |x| > 3에서 0.01 이하가 됩니다. 학습 초기에 weight 조정이 사실상 멈출 수 있습니다.' },
+          { k: '예상 효과', v: 'softsign이나 clamp를 쓰면 범위는 유지하면서 기울기 소실을 완화할 수 있습니다.' }
+        ],
+        diff: [
+          ['ctx', '        residual = raw.view(-1, self.horizon, self.n_cost)'],
+          ['del', '        residual = torch.tanh(residual) * self.scale'],
+          ['add', '        residual = torch.nn.functional.softsign(residual) * self.scale'],
+          ['ctx', '        return residual']
+        ],
+        tradeoff: 'softsign은 tanh보다 포화가 느린 대신 출력이 ±1에 도달하지 않습니다. 실효 조정폭이 약간 줄어듭니다.'
+      },
+      {
+        kind: 'Correctness', severity: 'Warning', file: 'envs/observation.py:25', title: 'q는 8개, dq는 9개만 관측에 포함됩니다',
+        sections: [
+          { k: '문제', v: '관절 12개 중 일부만 슬라이스합니다. 의도인지 실수인지 코드에 드러나지 않습니다.' },
+          { k: '근거', v: 'envs/observation.py 25줄 — q[:, :8], dq[:, :9].' },
+          { k: '수학적 영향', v: '관측이 상태를 완전히 담지 못하면 MDP 가정이 깨져 POMDP가 됩니다. 학습이 수렴해도 특정 다리의 상태를 보지 못합니다.' },
+          { k: '예상 효과', v: '차원을 명시적으로 구성하면 24라는 숫자의 근거가 코드에 남습니다.' }
+        ],
+        diff: [
+          ['del', '    raw = torch.cat([q[:, :8], dq[:, :9], p_obj, contact], dim=-1)'],
+          ['add', '    # 24 = 12(q) + 12(dq) ... 실제 의도에 맞게 재구성'],
+          ['add', '    raw = torch.cat([q, dq, p_obj, contact], dim=-1)  # [B, 31]'],
+          ['ctx', '    obs = (raw - OBS_MEAN) / (OBS_STD + 1e-6)']
+        ],
+        tradeoff: '차원이 바뀌면 obs_dim과 저장된 체크포인트가 모두 무효가 됩니다. 재학습이 필요합니다.'
+      },
+      {
+        kind: 'Design', severity: 'Suggestion', file: 'envs/observation.py:26', title: '정규화 상수가 모듈에 하드코딩되어 있습니다',
+        sections: [
+          { k: '문제', v: 'OBS_MEAN, OBS_STD가 코드 상수입니다.' },
+          { k: '근거', v: 'envs/observation.py 26줄.' },
+          { k: '수학적 영향', v: '분포가 다른 환경에서 (x − μ)/σ가 0 평균 1 분산을 보장하지 않습니다.' },
+          { k: '예상 효과', v: 'config로 옮기면 실험별 재현이 쉬워집니다.' }
+        ],
+        diff: [
+          ['del', '    obs = (raw - OBS_MEAN) / (OBS_STD + 1e-6)'],
+          ['add', '    obs = (raw - self.cfg.obs_mean) / (self.cfg.obs_std + 1e-6)']
+        ],
+        tradeoff: '설정 파일이 늘어납니다. 기본값을 유지해 하위 호환을 지키세요.'
+      },
+      {
+        kind: 'Mathematical', severity: 'Critical', file: 'control/mpc.py:39–50', title: 'phase 전환 시 접촉력 가중치가 1.5에서 55로 점프합니다',
+        sections: [
+          { k: '문제', v: 'PRE_CONTACT에서 CONTACT로 넘어가는 한 스텝 사이에 가중치가 36배 커집니다.' },
+          { k: '근거', v: 'control/mpc.py 39–41줄의 PHASE_PRIOR 상수와 50줄의 조회.' },
+          { k: '현재 동작', v: '전환 직전 W = 1.5, 직후 W = 55.0이며 그 사이 값이 없습니다.' },
+          { k: '수학적 영향', v: 'W가 불연속이면 argmin도 불연속입니다. u*가 한 스텝에서 크게 튀어 실제 로봇에 충격이 전달됩니다.' },
+          { k: '예상 효과', v: '전환 구간에 보간을 넣으면 제어 명령이 연속적으로 변합니다.' }
+        ],
+        diff: [
+          ['ctx', '    base = torch.tensor(PHASE_PRIOR[phase])'],
+          ['del', '    weight = base.view(1, 1, 5) + residual'],
+          ['add', '    beta = min(self.since_switch / self.blend_steps, 1.0)'],
+          ['add', '    base = (1 - beta) * self.prev_base + beta * base'],
+          ['add', '    weight = base.view(1, 1, 5) + residual'],
+          ['ctx', '    return weight.clamp_min(1e-3), phase']
+        ],
+        tradeoff: 'blend_steps가 길면 접촉 순간에 대한 반응이 늦어집니다. horizon보다 짧게 두는 편이 안전합니다.'
+      },
+      {
+        kind: 'Correctness', severity: 'Warning', file: 'control/mpc.py:45–50', title: 'FAILED phase가 PHASE_PRIOR에 없어 KeyError가 발생합니다',
+        sections: [
+          { k: '문제', v: '45–46줄에서 phase를 "FAILED"로 바꾸지만 PHASE_PRIOR에는 해당 키가 없습니다.' },
+          { k: '근거', v: 'control/mpc.py 38–42줄의 딕셔너리에는 3개 키만 있습니다.' },
+          { k: '수학적 영향', v: '계산 이전에 예외로 중단되므로 제어 루프가 그 스텝에서 죽습니다. 상태 기계에 흡수 상태가 있는데 출구 정의가 없습니다.' },
+          { k: '예상 효과', v: 'FAILED 항목을 정의하거나, 안전 정지 가중치로 명시적으로 분기하면 루프가 유지됩니다.' }
+        ],
+        diff: [
+          ['ctx', '    "POST_CONTACT": [12.0, 3.0,  8.0, 0.1, 0.5],'],
+          ['add', '    "FAILED":       [ 0.5, 8.0,  0.1, 5.0, 5.0],  # 안전 정지'],
+          ['ctx', '}']
+        ],
+        tradeoff: 'FAILED에서 자동 복귀 조건을 함께 정의하지 않으면 에피소드가 끝날 때까지 정지 상태로 남습니다.'
+      }
+    ];
+    const rk = s.reviewKind || '전체';
+    V.reviewKinds = ['전체', 'Correctness', 'Mathematical', 'Design'].map(label => ({
+      label,
+      select: () => {
+        const first = ISSUES.findIndex(i => label === '전체' || i.kind === label);
+        this.setState({ reviewKind: label, copied: false, reviewSel: first < 0 ? 0 : first });
+      },
+      bg: rk === label ? '#007AFF' : '#fff',
+      fg: rk === label ? '#fff' : 'rgba(60,60,67,.8)',
+      border: rk === label ? '#007AFF' : 'rgba(84,84,86,.2)',
+      weight: rk === label ? '600' : '500'
+    }));
+    V.issueCount = ISSUES.filter(i => rk === '전체' || i.kind === rk).length;
+    const sevStyle = (sev) => sev === 'Critical' ? { fg: '#D70015', bg: 'rgba(255,59,48,.14)', bd: 'rgba(255,59,48,.3)', card: 'rgba(255,59,48,.04)' }
+      : sev === 'Warning' ? { fg: '#C93400', bg: 'rgba(255,149,0,.16)', bd: 'rgba(255,149,0,.28)', card: 'rgba(255,149,0,.04)' }
+        : { fg: '#0062CC', bg: 'rgba(0,122,255,.12)', bd: 'rgba(84,84,86,.14)', card: '#fff' };
+    let selIdx0 = s.reviewSel;
+    if (!(rk === '전체' || (ISSUES[selIdx0] && ISSUES[selIdx0].kind === rk))) {
+      const f0 = ISSUES.findIndex(i => i.kind === rk);
+      if (f0 >= 0) selIdx0 = f0;
+    }
+    V.reviewList = ISSUES.map((i, idx) => [i, idx]).filter(([i]) => rk === '전체' || i.kind === rk).map(([i, idx]) => {
+      const st = sevStyle(i.severity);
+      return { severity: i.severity, kind: i.kind, title: i.title, file: i.file, sevFg: st.fg, sevBg: st.bg, border: idx === selIdx0 ? 'rgba(0,122,255,.5)' : st.bd, bg: idx === selIdx0 ? 'rgba(0,122,255,.06)' : st.card, select: () => this.setState({ reviewSel: idx, copied: false }) };
+    });
+    const sel = ISSUES[selIdx0];
+    const selSt = sevStyle(sel.severity);
+    V.sel = {
+      severity: sel.severity, kind: sel.kind, title: sel.title, file: sel.file, sections: sel.sections, tradeoff: sel.tradeoff,
+      sevFg: selSt.fg, sevBg: selSt.bg,
+      diff: sel.diff.map(([k, text]) => ({
+        text, mark: k === 'add' ? '+' : k === 'del' ? '−' : '',
+        bg: k === 'add' ? 'rgba(52,199,89,.10)' : k === 'del' ? 'rgba(255,59,48,.08)' : 'transparent',
+        fg: k === 'del' ? 'rgba(60,60,67,.55)' : '#1D1D1F',
+        markFg: k === 'add' ? '#248A3D' : k === 'del' ? '#D70015' : 'transparent'
+      }))
+    };
+    V.copyLabel = s.copied ? '복사했습니다' : '수정 코드 복사';
+    V.copyFix = () => this.setState({ copied: true });
+
+    // errors
+    V.errorCards = [
+      { title: '지원하지 않는 파일 형식', body: '.py와 .zip만 분석할 수 있습니다. 다른 파일은 제외하고 다시 업로드해 주세요.', detail: 'notes.ipynb\ndata/trajectory.npz', action: '해당 파일 제외하고 계속', dot: '#FF9500', border: 'rgba(255,149,0,.3)' },
+      { title: '암호화된 ZIP', body: '암호가 걸린 압축 파일은 열 수 없습니다. 암호를 해제한 ZIP으로 다시 올려주세요.', detail: 'project.zip — encrypted entries: 31', action: '다시 업로드', dot: '#FF3B30', border: 'rgba(255,59,48,.3)' },
+      { title: 'Python 문법 오류', body: '문법 오류가 있는 파일만 제외하고 나머지 분석을 계속했습니다.', detail: '14개 중 13개 파일 분석 완료\n제외: legacy_controller.py\n원인: 143줄 SyntaxError', action: '제외된 파일 보기', dot: '#FF9500', border: 'rgba(255,149,0,.3)' },
+      { title: '시작점 탐색 실패', body: '명확한 실행 시작점을 찾지 못했습니다. 라이브러리 프로젝트이거나 외부 스크립트에서 호출될 수 있습니다.', detail: '__main__ 블록: 없음\nCLI entry point: 없음', action: '직접 시작 함수 선택', dot: '#AF52DE', border: 'rgba(175,82,222,.3)' },
+      { title: 'Shape 추론 실패', body: '정적 분석만으로 확정할 수 없습니다. 실행 시 입력 예시나 runtime trace가 필요합니다.', detail: '추정: [B, N, action_dim]\n확실성: 실행 필요', action: '입력 예시 제공하기', dot: '#AF52DE', border: 'rgba(175,82,222,.3)' },
+      { title: 'AI 응답 실패', body: '정적 분석 결과는 그대로 유지됩니다. AI 설명만 다시 시도하면 되고, 프로젝트를 재업로드할 필요는 없습니다.', detail: '실패: 3 / 63 함수\n정적 분석: 정상', action: '설명만 다시 생성', dot: '#FF3B30', border: 'rgba(255,59,48,.3)' }
+    ];
+
+    return V;
+  }
+}
+
+</script>
+</body>
+</html>

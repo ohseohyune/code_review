@@ -1,0 +1,8 @@
+.venv/
+.env
+app.db
+events.log
+uploads/
+__pycache__/
+*.pyc
+.pytest_cache/
