@@ -10,6 +10,7 @@ same as any other API error would.
 """
 import os
 import json
+import re
 from typing import Literal
 
 from openai import OpenAI
@@ -43,6 +44,24 @@ def _strict_schema(schema: dict) -> dict:
     return schema
 
 
+_CONTROL_CHAR_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
+
+
+def _strip_control_chars(value):
+    """gpt-4o's strict-JSON mode occasionally corrupts multi-byte (Korean) text into
+    raw control characters instead of the intended glyphs -- rare, but json.loads
+    still accepts it (they arrive as valid \\u00xx escapes), so it reaches the UI as
+    visible garbage unless stripped here, once, right after parsing.
+    """
+    if isinstance(value, str):
+        return _CONTROL_CHAR_RE.sub("", value)
+    if isinstance(value, list):
+        return [_strip_control_chars(v) for v in value]
+    if isinstance(value, dict):
+        return {k: _strip_control_chars(v) for k, v in value.items()}
+    return value
+
+
 def _call_structured(system_prompt: str, user_content: str, schema_model: type[BaseModel],
                       schema_name: str) -> BaseModel:
     """One strict-schema chat completion, validated against schema_model. Raises on any
@@ -61,7 +80,7 @@ def _call_structured(system_prompt: str, user_content: str, schema_model: type[B
             {"role": "user", "content": user_content},
         ],
     )
-    raw = json.loads(resp.choices[0].message.content)
+    raw = _strip_control_chars(json.loads(resp.choices[0].message.content))
     return schema_model.model_validate(raw)
 
 
@@ -143,7 +162,13 @@ Also fill equation.latex with the same expression as one LaTeX string when repre
 token's text MUST be valid standalone LaTeX -- never raw Python (no "return", no bare identifiers with \
 unescaped underscores or parentheses copied verbatim from source). A function/variable name from code \
 becomes \\text{name} with underscores escaped (\\text{matrix\\_log\\_se3}), never a naked code fragment; \
-a python keyword like "return" is never itself a token -- it just doesn't appear in the formula at all.
+a python keyword like "return" is never itself a token -- it just doesn't appear in the formula at all. \
+Each token is rendered by KaTeX INDEPENDENTLY of the others, one at a time -- so a LaTeX environment \
+(\\begin{bmatrix}...\\end{bmatrix}, \\begin{cases}...\\end{cases}, etc.) can NEVER be split across \
+multiple tokens; \\begin{...} and \\end{...} must always appear together inside the SAME token's text, \
+with the full environment body (all rows, &, \\\\) included in that one token. For a matrix, that means \
+ONE token holds the entire \\begin{bmatrix}...\\end{bmatrix} block -- do not emit \\begin{bmatrix}, then \
+separate tokens for each cell, then \\end{bmatrix}; each would fail to parse alone.
 - shape entries are symbolic (e.g. "B", "6", "5") when the batch dimension is runtime-only; never \
 invent a concrete batch size.
 - The context includes a STATICALLY VERIFIED SHAPES section produced by deterministic AST analysis \

@@ -22,6 +22,23 @@ export default function FormulaView({ tokens, ariaLabel }: { tokens: MathToken[]
 
   if (tokens.length === 0) return null;
 
+  // A LaTeX environment (\begin{bmatrix}...\end{bmatrix}) only parses as one unit --
+  // KaTeX renders each token independently, so if the model ever splits one across
+  // tokens (each fragment then fails on its own), fall back to one combined render
+  // of every token's text joined together instead of showing the broken pieces.
+  const hasSplitEnvironment = tokens.some((t) => /\\begin\{|\\end\{/.test(t.text));
+  if (hasSplitEnvironment) {
+    return (
+      <div
+        role="img"
+        aria-label={ariaLabel ?? tokens.map((t) => t.text).join(" ")}
+        className="rounded-xl bg-[#FAFAFC] px-4 py-4 text-[21px]"
+        style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+        dangerouslySetInnerHTML={{ __html: renderTex(tokens.map((t) => t.text).join(" ")) }}
+      />
+    );
+  }
+
   return (
     <div
       role="img"

@@ -308,6 +308,11 @@ export default function TeacherPanel({
       <div className="flex h-11 items-center gap-3 bg-white px-4" style={{ borderBottom: "0.5px solid rgba(84,84,86,.18)" }}>
         <span className="text-[11px] font-bold text-[#007AFF]">AI TEACHER</span>
         {mode === "learning" && <span className="font-mono text-[11px] text-[rgba(60,60,67,.5)]">{step + 1} / 6</span>}
+        {analysis && (
+          <button onClick={onRetry} className="text-[11px] font-semibold text-[rgba(60,60,67,.5)]">
+            다시 분석
+          </button>
+        )}
         <div className="ml-auto">
           <StepRail step={step} onJump={onStepChange} />
         </div>
