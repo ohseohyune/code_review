@@ -153,6 +153,44 @@ def answer_question(fn: FunctionRecord, project: ProjectAnalysis, question: str,
     return parsed.answer, parsed.evidence
 
 
+class ProjectSummaryResult(BaseModel):
+    summary: str
+
+
+PROJECT_SUMMARY_PROMPT = """You are describing what a Python project actually does, in one \
+plain Korean sentence, for someone who hasn't read the code yet. You're given the file/class \
+list and the entry-point function's source -- not the whole repo. Say what the project DOES \
+(domain, purpose), not how many files/functions/classes it has (that's shown separately in the \
+UI already, don't repeat it). No jargon dump, no hedging filler. If the entry point's purpose \
+genuinely isn't clear from what you're given, describe what the entry point concretely does \
+instead of guessing the domain."""
+
+
+def summarize_project(entry_fn: FunctionRecord | None, project: ProjectAnalysis) -> str | None:
+    """One cheap, best-effort LLM call for the Overview headline -- never required (static
+    analysis always has a usable fallback), so callers should swallow failures.
+    """
+    client = Anthropic()
+    lines = [f"FILES: {project.files}", f"CLASSES: {[c.name for c in project.classes]}"]
+    if entry_fn:
+        lines.append(f"ENTRY POINT: {entry_fn.qualified_name}\n{entry_fn.source}")
+
+    resp = client.messages.create(
+        model=MODEL,
+        max_tokens=256,
+        system=PROJECT_SUMMARY_PROMPT,
+        tools=[{
+            "name": "submit_summary",
+            "description": "Submit the one-sentence Korean project summary.",
+            "input_schema": ProjectSummaryResult.model_json_schema(),
+        }],
+        tool_choice={"type": "tool", "name": "submit_summary"},
+        messages=[{"role": "user", "content": "\n".join(lines)}],
+    )
+    tool_use = next(b for b in resp.content if b.type == "tool_use")
+    return ProjectSummaryResult.model_validate(tool_use.input).summary
+
+
 def analyze_function(fn: FunctionRecord, project: ProjectAnalysis) -> FunctionAnalysis:
     client = Anthropic()  # reads ANTHROPIC_API_KEY from env
     context = _context_block(fn, project)

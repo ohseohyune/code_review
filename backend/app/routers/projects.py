@@ -141,6 +141,23 @@ async def create_project_from_github(body: GithubImportRequest, db: Session = De
     return {"project_id": row.id}
 
 
+def _infer_project_name(files: list[UploadFile]) -> str:
+    """The uploaded files' own path tells us the real project name -- a folder
+    upload's paths all share one top-level directory (e.g. "we_meet/weld_ui.py"),
+    and a zip/flat-file upload at least has a real filename. Never the random
+    upload-dir UUID, which means nothing to the person looking at it.
+    """
+    tops = set()
+    for f in files:
+        name = (f.filename or "").lstrip("/")
+        if "/" in name:
+            tops.add(name.split("/", 1)[0])
+    if len(tops) == 1:
+        return next(iter(tops))
+    first = (files[0].filename or "").lstrip("/") if files else ""
+    return Path(first).stem or "project"
+
+
 @router.post("")
 async def create_project(files: list[UploadFile], db: Session = Depends(get_db)):
     if not files:
@@ -170,7 +187,7 @@ async def create_project(files: list[UploadFile], db: Session = Depends(get_db))
         shutil.rmtree(project_dir, ignore_errors=True)
         raise
 
-    row = persist_project(db, name=project_dir.name[:8], root_dir=project_dir)
+    row = persist_project(db, name=_infer_project_name(files), root_dir=project_dir)
     return {"project_id": row.id}
 
 

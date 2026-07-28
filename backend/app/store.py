@@ -1,10 +1,12 @@
 """Turns a freshly-analyzed project directory into DB rows."""
+import os
 import uuid
 from pathlib import Path
 
 from sqlalchemy.orm import Session
 
 from app.analysis.ast_parser import analyze_project, list_scannable_files, ProjectAnalysis
+from app.analysis.llm import summarize_project
 from app.analysis.secrets import scan_secrets
 from app.models import ProjectRow, ClassRow, FunctionRow
 
@@ -48,6 +50,14 @@ def persist_project(db: Session, name: str, root_dir: Path) -> ProjectRow:
     if analysis.entry_point:
         row.entry_point = {**analysis.entry_point,
                             "function_id": f"{project_id}::{analysis.entry_point['function_id']}"}
+
+    if os.environ.get("ANTHROPIC_API_KEY"):
+        entry_id = analysis.entry_point["function_id"] if analysis.entry_point else None
+        entry_fn = next((f for f in analysis.functions if f.id == entry_id), None)
+        try:
+            row.ai_summary = summarize_project(entry_fn, analysis)
+        except Exception:
+            pass  # best-effort enrichment -- the static summary is always a fine fallback
 
     db.commit()
     db.refresh(row)

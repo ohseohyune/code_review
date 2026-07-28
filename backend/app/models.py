@@ -20,6 +20,7 @@ class ProjectRow(Base):
     function_count = Column(Integer, default=0)
     excluded_files = Column(JSON, default=list)
     entry_point = Column(JSON, nullable=True)   # {function_id, reason}
+    ai_summary = Column(Text, nullable=True)    # one-sentence purpose, best-effort LLM enrichment
     secret_warnings = Column(JSON, default=list)
 
     functions = relationship("FunctionRow", back_populates="project", cascade="all, delete-orphan")

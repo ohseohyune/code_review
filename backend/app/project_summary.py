@@ -76,12 +76,14 @@ def build_project_summary(project: ProjectRow, functions: list[FunctionRow]) -> 
     caveats = [f"{e['path']} — {e['reason']} (분석 제외)" for e in (project.excluded_files or [])]
     caveats += list(project.secret_warnings or [])
 
-    summary = (
-        f"{project.name} 프로젝트: 파일 {project.analyzed_file_count}개에서 "
-        f"클래스 {project.class_count}개, 함수 {project.function_count}개를 분석했습니다."
-    )
-    if entry_fn:
-        summary += f" 진입점은 {entry_fn.qualified_name} 입니다."
+    # Counts are already shown in the stat cards right below this headline -- an AI-written
+    # purpose sentence (when available) replaces the stat-dump instead of repeating it.
+    if project.ai_summary:
+        summary = project.ai_summary
+    elif entry_fn:
+        summary = f"{project.name} 프로젝트 — {entry_fn.name}() 을 시작점으로 합니다."
+    else:
+        summary = f"{project.name} 프로젝트."
 
     return ProjectSummary(
         id=project.id,

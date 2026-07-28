@@ -12,13 +12,13 @@ export default async function OverviewPage({ params }: { params: Promise<{ id: s
     ["클래스", String(project.class_count), "#1D1D1F"],
     ["함수", String(project.function_count), "#1D1D1F"],
     ["진입점 후보", project.entry_points[0]?.name ?? "없음", "#007AFF"],
-    ["분석 확실성", "정적 분석", "#248A3D"],
+    ["분석 방식", "AI 없이 자동 추출", "#248A3D"],
   ];
 
   return (
     <div className="min-h-screen min-w-[1680px] bg-[#F2F2F7] px-10 py-10">
       <div className="flex items-start justify-between">
-        <p className="text-[13px] font-semibold text-[#248A3D]">✓ 분석 완료 · 확실성 정적 분석</p>
+        <p className="text-[13px] font-semibold text-[#248A3D]">✓ 분석 완료 · 코드 구조만 보고 자동으로 채웠어요 (AI 미사용)</p>
         <DeleteProjectButton projectId={id} />
       </div>
       <h1 className="mt-2 max-w-[900px] text-[30px] font-bold leading-tight tracking-[-0.7px]">
