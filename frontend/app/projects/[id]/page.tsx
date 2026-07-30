@@ -5,7 +5,7 @@ import LearningPathCard from "@/components/LearningPathCard";
 
 export default async function OverviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const project = await api.getProject(id);
+  const [project, notes] = await Promise.all([api.getProject(id), api.getProjectNotes(id)]);
 
   const stats: [string, string, string][] = [
     ["분석된 파일", String(project.analyzed_file_count), "#1D1D1F"],
@@ -88,6 +88,31 @@ export default async function OverviewPage({ params }: { params: Promise<{ id: s
           )}
         </div>
       </div>
+
+      {notes.length > 0 && (
+        <div className="mt-4 rounded-2xl bg-white p-5" style={{ border: "0.5px solid rgba(84,84,86,.18)" }}>
+          <h2 className="text-[15px] font-semibold">
+            📝🤯 모아보기 <span className="text-[rgba(60,60,67,.45)]">({notes.length}개)</span>
+          </h2>
+          <div className="mt-3 flex flex-col gap-1.5">
+            {notes.map((note) => (
+              <Link
+                key={note.id}
+                href={`/projects/${id}/workspace/${encodeURIComponent(note.function_id)}`}
+                className="flex items-center gap-2.5 rounded-xl px-3 py-2 hover:bg-[rgba(120,120,128,.06)]"
+                style={{ border: "0.5px solid rgba(84,84,86,.12)" }}
+              >
+                <span className="shrink-0">{note.kind === "confused" ? "🤯" : "📝"}</span>
+                <span className="font-mono text-[12px] font-semibold shrink-0">{note.qualified_name}</span>
+                <span className="font-mono text-[11px] text-[rgba(60,60,67,.45)] shrink-0">{note.start_line}행</span>
+                <span className="flex-1 truncate text-[12.5px] text-[rgba(60,60,67,.65)]">
+                  {note.text || "헷갈리는 부분"}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="mt-8 text-center">
         <Link

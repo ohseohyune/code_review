@@ -208,10 +208,18 @@ export interface ProjectGraph {
   cycles: string[][];
 }
 
+export type NoteKind = "memo" | "confused";
+
 export interface Note {
   id: string;
   function_id: string;
   start_line: number;
   end_line: number;
   text: string;
+  kind: NoteKind;
+}
+
+export interface ProjectNote extends Note {
+  qualified_name: string;
+  file_path: string;
 }

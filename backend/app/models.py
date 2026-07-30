@@ -72,4 +72,5 @@ class NoteRow(Base):
     start_line = Column(Integer)
     end_line = Column(Integer)
     text = Column(Text)
+    kind = Column(String, default="memo")   # "memo" | "confused"
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))

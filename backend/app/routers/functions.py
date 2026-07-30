@@ -121,21 +121,21 @@ def ask_function(function_id: str, body: AskRequest, db: Session = Depends(get_d
 def list_notes(function_id: str, db: Session = Depends(get_db)):
     _get_or_404(db, function_id)
     rows = db.query(NoteRow).filter(NoteRow.function_id == function_id).order_by(NoteRow.start_line).all()
-    return [Note(id=r.id, function_id=r.function_id, start_line=r.start_line, end_line=r.end_line, text=r.text)
-            for r in rows]
+    return [Note(id=r.id, function_id=r.function_id, start_line=r.start_line, end_line=r.end_line,
+                 text=r.text, kind=r.kind or "memo") for r in rows]
 
 
 @router.post("/{function_id}/notes", response_model=Note)
 def create_note(function_id: str, body: NoteCreate, db: Session = Depends(get_db)):
     _get_or_404(db, function_id)
-    if not body.text.strip():
+    if body.kind == "memo" and not body.text.strip():
         raise HTTPException(400, "메모 내용이 비어 있습니다.")
-    row = NoteRow(id=str(uuid.uuid4()), function_id=function_id,
+    row = NoteRow(id=str(uuid.uuid4()), function_id=function_id, kind=body.kind,
                    start_line=body.start_line, end_line=body.end_line, text=body.text.strip())
     db.add(row)
     db.commit()
     return Note(id=row.id, function_id=row.function_id, start_line=row.start_line,
-                end_line=row.end_line, text=row.text)
+                end_line=row.end_line, text=row.text, kind=row.kind)
 
 
 @router.delete("/{function_id}/notes/{note_id}")

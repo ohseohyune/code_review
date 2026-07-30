@@ -99,9 +99,16 @@ export default function CodePanel({ fn }: { fn: FunctionSource }) {
 
   async function saveNote() {
     if (!selection || !draftNote.trim()) return;
-    const note = await api.createNote(fn.id, selection.startLine, selection.endLine, draftNote);
+    const note = await api.createNote(fn.id, selection.startLine, selection.endLine, draftNote, "memo");
     setNotes((n) => [...n, note]);
     setDraftNote("");
+    clearSelection();
+  }
+
+  async function markConfused() {
+    if (!selection) return;
+    const note = await api.createNote(fn.id, selection.startLine, selection.endLine, "", "confused");
+    setNotes((n) => [...n, note]);
     clearSelection();
   }
 
@@ -149,9 +156,9 @@ export default function CodePanel({ fn }: { fn: FunctionSource }) {
         range: new monaco.Range(note.start_line - startLine + 1, 1, note.end_line - startLine + 1, 1),
         options: {
           isWholeLine: true,
-          className: "note-line",
-          glyphMarginClassName: "note-glyph",
-          glyphMarginHoverMessage: { value: note.text },
+          className: note.kind === "confused" ? "confused-line" : "note-line",
+          glyphMarginClassName: note.kind === "confused" ? "confused-glyph" : "note-glyph",
+          glyphMarginHoverMessage: { value: note.text || "헷갈리는 부분으로 표시함" },
         },
       }))
     );
@@ -189,7 +196,8 @@ export default function CodePanel({ fn }: { fn: FunctionSource }) {
           className="rounded-full px-2 py-0.5 text-[11px] font-semibold"
           style={showNotes ? { background: "#FF9500", color: "white" } : { background: "rgba(255,149,0,.12)", color: "#C93400" }}
         >
-          📝 메모 {notes.length}개
+          📝 메모 {notes.filter((n) => n.kind !== "confused").length}개 · 🤯{" "}
+          {notes.filter((n) => n.kind === "confused").length}개
         </button>
         {highlight && (
           <span className="ml-auto rounded-full bg-[rgba(0,122,255,.12)] px-2.5 py-0.5 text-[11px] font-semibold text-[#0062CC]">
@@ -208,11 +216,12 @@ export default function CodePanel({ fn }: { fn: FunctionSource }) {
                 className="flex items-start gap-2 px-4 py-2 text-[12.5px]"
                 style={{ borderTop: "0.5px solid rgba(84,84,86,.1)" }}
               >
+                <span className="shrink-0">{note.kind === "confused" ? "🤯" : "📝"}</span>
                 <button onClick={() => jumpToNote(note)} className="shrink-0 font-mono text-[11px] font-semibold text-[#C93400]">
                   {note.start_line}
                   {note.end_line !== note.start_line ? `-${note.end_line}` : ""}행
                 </button>
-                <p className="flex-1 whitespace-pre-wrap">{note.text}</p>
+                <p className="flex-1 whitespace-pre-wrap">{note.text || "헷갈리는 부분"}</p>
                 <button onClick={() => removeNote(note.id)} className="shrink-0 text-[11px] text-[rgba(60,60,67,.4)]">
                   삭제
                 </button>
@@ -255,6 +264,13 @@ export default function CodePanel({ fn }: { fn: FunctionSource }) {
               style={{ background: "#FF9500", boxShadow: "0 4px 12px rgba(0,0,0,.18)" }}
             >
               📝 메모 추가
+            </button>
+            <button
+              onClick={markConfused}
+              className="flex h-8 items-center gap-1.5 rounded-full px-3 text-[12px] font-semibold text-white"
+              style={{ background: "#AF52DE", boxShadow: "0 4px 12px rgba(0,0,0,.18)" }}
+            >
+              🤯 헷갈려요
             </button>
           </div>
         )}

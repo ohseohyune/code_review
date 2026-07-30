@@ -208,10 +208,14 @@ class AskResponse(BaseModel):
     evidence: list[CodeRef]
 
 
+NoteKind = Literal["memo", "confused"]
+
+
 class NoteCreate(BaseModel):
     start_line: int
     end_line: int
-    text: str
+    text: str = ""
+    kind: NoteKind = "memo"
 
 
 class Note(BaseModel):
@@ -220,3 +224,9 @@ class Note(BaseModel):
     start_line: int
     end_line: int
     text: str
+    kind: NoteKind = "memo"
+
+
+class ProjectNote(Note):
+    qualified_name: str
+    file_path: str

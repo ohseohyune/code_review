@@ -8,6 +8,8 @@ import type {
   ProjectGraph,
   Issue,
   Note,
+  NoteKind,
+  ProjectNote,
 } from "./types";
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
@@ -95,13 +97,16 @@ export const api = {
 
   listNotes: (fnId: string) => req<Note[]>(`/functions/${fnId}/notes`),
 
-  createNote: (fnId: string, startLine: number, endLine: number, text: string) =>
+  createNote: (fnId: string, startLine: number, endLine: number, text: string, kind: NoteKind = "memo") =>
     req<Note>(`/functions/${fnId}/notes`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ start_line: startLine, end_line: endLine, text }),
+      body: JSON.stringify({ start_line: startLine, end_line: endLine, text, kind }),
     }),
 
   deleteNote: (fnId: string, noteId: string) =>
     req<{ ok: boolean }>(`/functions/${fnId}/notes/${noteId}`, { method: "DELETE" }),
+
+  getProjectNotes: (projectId: string, kind?: NoteKind) =>
+    req<ProjectNote[]>(`/projects/${projectId}/notes${kind ? `?kind=${kind}` : ""}`),
 };

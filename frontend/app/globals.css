@@ -59,3 +59,11 @@
   content: "💩";
   font-size: 12px;
 }
+
+.confused-line {
+  background: rgba(175, 82, 222, 0.08) !important;
+}
+.confused-glyph::after {
+  content: "🤯";
+  font-size: 11px;
+}

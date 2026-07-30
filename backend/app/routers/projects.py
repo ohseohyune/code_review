@@ -13,9 +13,9 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.db import get_db
-from app.models import ProjectRow, FunctionRow, ClassRow
+from app.models import ProjectRow, FunctionRow, ClassRow, NoteRow
 from app.store import persist_project, require_root_dir
-from app.schemas import ProjectSummary, ProjectTree, FunctionListItem, ClassListItem, ProjectGraph, Issue
+from app.schemas import ProjectSummary, ProjectTree, FunctionListItem, ClassListItem, ProjectGraph, Issue, ProjectNote
 from app.project_summary import build_project_summary
 from app.analysis.ast_parser import analyze_project
 from app.analysis.graph import build_function_graph, build_import_graph
@@ -325,6 +325,30 @@ def get_issues(project_id: str, kind: str = "전체", db: Session = Depends(get_
 
     issues.sort(key=lambda i: _SEVERITY_ORDER.get(i.get("severity"), 9))
     return issues
+
+
+@router.get("/{project_id}/notes", response_model=list[ProjectNote])
+def get_project_notes(project_id: str, kind: str | None = None, db: Session = Depends(get_db)):
+    """All 📝/🤯 marks across every function in the project, in one place -- so
+    "헷갈리는 부분" don't get lost once you've moved on to the next function.
+    """
+    project = db.get(ProjectRow, project_id)
+    if not project:
+        raise HTTPException(404, "project not found")
+    rows = (
+        db.query(NoteRow, FunctionRow)
+        .join(FunctionRow, NoteRow.function_id == FunctionRow.id)
+        .filter(FunctionRow.project_id == project_id)
+        .order_by(FunctionRow.file_path, NoteRow.start_line)
+        .all()
+    )
+    return [
+        ProjectNote(id=note.id, function_id=note.function_id, start_line=note.start_line,
+                    end_line=note.end_line, text=note.text, kind=note.kind or "memo",
+                    qualified_name=fn.qualified_name, file_path=fn.file_path)
+        for note, fn in rows
+        if kind is None or (note.kind or "memo") == kind
+    ]
 
 
 @router.get("/{project_id}/tree", response_model=ProjectTree)
