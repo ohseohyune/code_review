@@ -99,15 +99,17 @@ export default async function OverviewPage({ params }: { params: Promise<{ id: s
               <Link
                 key={note.id}
                 href={`/projects/${id}/workspace/${encodeURIComponent(note.function_id)}`}
-                className="flex items-center gap-2.5 rounded-xl px-3 py-2 hover:bg-[rgba(120,120,128,.06)]"
+                className="flex flex-col gap-1 rounded-xl px-3 py-2.5 hover:bg-[rgba(120,120,128,.06)]"
                 style={{ border: "0.5px solid rgba(84,84,86,.12)" }}
               >
-                <span className="shrink-0">{note.kind === "confused" ? "🤯" : "📝"}</span>
-                <span className="font-mono text-[12px] font-semibold shrink-0">{note.qualified_name}</span>
-                <span className="font-mono text-[11px] text-[rgba(60,60,67,.45)] shrink-0">{note.start_line}행</span>
-                <span className="flex-1 truncate text-[12.5px] text-[rgba(60,60,67,.65)]">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="shrink-0">{note.kind === "confused" ? "🤯" : "📝"}</span>
+                  <span className="font-mono text-[12px] font-semibold break-all">{note.qualified_name}</span>
+                  <span className="font-mono text-[11px] text-[rgba(60,60,67,.45)] shrink-0">{note.start_line}행</span>
+                </div>
+                <p className="whitespace-pre-wrap break-words text-[12.5px] text-[rgba(60,60,67,.65)]">
                   {note.text || "헷갈리는 부분"}
-                </span>
+                </p>
               </Link>
             ))}
           </div>
