@@ -184,23 +184,25 @@ export default function CodePanel({ fn }: { fn: FunctionSource }) {
   return (
     <div className="flex h-full flex-col">
       <div
-        className="flex h-9 items-center gap-2 px-4 text-[12px]"
+        className="flex h-9 shrink-0 items-center gap-2 px-4 text-[12px]"
         style={{ borderBottom: "0.5px solid rgba(84,84,86,.18)" }}
       >
-        <span className="font-mono font-semibold">{fn.qualified_name}</span>
-        <span className="font-mono text-[rgba(60,60,67,.45)]">
+        <span className="min-w-0 flex-1 truncate font-mono font-semibold" title={fn.qualified_name}>
+          {fn.qualified_name}
+        </span>
+        <span className="shrink-0 whitespace-nowrap font-mono text-[rgba(60,60,67,.45)]">
           {fn.line_range[0]}-{fn.line_range[1]}
         </span>
         <button
           onClick={() => setShowNotes((s) => !s)}
-          className="rounded-full px-2 py-0.5 text-[11px] font-semibold"
+          className="shrink-0 whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-semibold"
           style={showNotes ? { background: "#FF9500", color: "white" } : { background: "rgba(255,149,0,.12)", color: "#C93400" }}
         >
           📝 메모 {notes.filter((n) => n.kind !== "confused").length}개 · 🤯{" "}
           {notes.filter((n) => n.kind === "confused").length}개
         </button>
         {highlight && (
-          <span className="ml-auto rounded-full bg-[rgba(0,122,255,.12)] px-2.5 py-0.5 text-[11px] font-semibold text-[#0062CC]">
+          <span className="shrink-0 whitespace-nowrap rounded-full bg-[rgba(0,122,255,.12)] px-2.5 py-0.5 text-[11px] font-semibold text-[#0062CC]">
             {highlight.label}
           </span>
         )}
