@@ -28,7 +28,12 @@ MAX_TOTAL_BYTES = 50 * 1024 * 1024
 
 
 def _safe_dest(project_dir: Path, rel: str) -> Path | None:
-    """Resolve rel under project_dir, refusing anything that would escape it (zip-slip guard)."""
+    """Resolve rel under project_dir, refusing anything that would escape it (zip-slip guard)
+    or that isn't a .py file -- the single choke point every upload path (direct files,
+    zip, GitHub tarball) writes through, so only Python source ever lands on disk.
+    """
+    if not rel.lower().endswith(".py"):
+        return None
     dest = (project_dir / rel.lstrip("/")).resolve()
     if project_dir.resolve() not in dest.parents and dest != project_dir.resolve():
         return None

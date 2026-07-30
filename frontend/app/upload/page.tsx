@@ -4,17 +4,15 @@ import { useRouter } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
 import { track } from "@/lib/analytics";
 
-// Kept in sync with the backend's classify_files() allowlist (app/analysis/ast_parser.py):
-// .py is analyzed as source, the rest ride along unanalyzed for config/context (magic numbers etc).
-const SOURCE_EXTS = [".py", ".yaml", ".yml", ".json", ".md", ".txt"];
-
 type Rejected = { name: string; reason: string };
 
+// Kept in sync with the backend's _safe_dest() allowlist (app/routers/projects.py):
+// only .py reaches disk, so only .py is worth showing as "accepted" here.
 function classify(name: string): string | null {
   const lower = name.toLowerCase();
   if (lower.endsWith(".zip")) return null; // handled separately, always accepted
-  if (SOURCE_EXTS.some((ext) => lower.endsWith(ext))) return null;
-  return "지원하지 않는 형식";
+  if (lower.endsWith(".py")) return null;
+  return "지원하지 않는 형식 (.py만 허용)";
 }
 
 // Dropped folders arrive as FileSystemEntry trees, not a flat FileList like
@@ -193,7 +191,7 @@ export default function UploadPage() {
             ref={fileInput}
             type="file"
             multiple
-            accept=".py,.yaml,.yml,.json,.md,.txt,.zip"
+            accept=".py,.zip"
             className="hidden"
             onChange={(e) => addFiles(e.target.files)}
           />

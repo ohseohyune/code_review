@@ -80,19 +80,24 @@ def test_import_graph(tmp_path):
     assert edges == [{"source": "main.py", "target": "util.py", "label": "import"}]
 
 
-def test_secret_scan_covers_yaml_config(tmp_path):
+def test_list_scannable_files_is_py_only(tmp_path):
     from app.analysis.ast_parser import list_scannable_files
-    from app.analysis.secrets import scan_secrets
 
     (tmp_path / "main.py").write_text("def run():\n    return 1\n")
     (tmp_path / "config.yaml").write_text('api_key: "sk-ant-1234567890abcdef1234567890"\n')
-    files = list_scannable_files(tmp_path)
-    assert "config.yaml" in files
-    warnings = scan_secrets(tmp_path, files)
-    assert any("config.yaml" in w for w in warnings)
+    assert list_scannable_files(tmp_path) == ["main.py"]
 
 
 def test_clean_docstring_strips_ansi_and_latex_delimiters():
     assert _clean_docstring("\x1b[31mred\x1b[0m text") == "red text"
     assert _clean_docstring("rotation \\( R \\) and \\[ p \\]") == "rotation  R  and  p "
     assert _clean_docstring(None) is None
+
+
+def test_safe_dest_rejects_non_python_files(tmp_path):
+    from app.routers.projects import _safe_dest
+
+    assert _safe_dest(tmp_path, "main.py") == (tmp_path / "main.py").resolve()
+    assert _safe_dest(tmp_path, "config.yaml") is None
+    assert _safe_dest(tmp_path, "README.md") is None
+    assert _safe_dest(tmp_path, "../evil.py") is None  # zip-slip guard still applies

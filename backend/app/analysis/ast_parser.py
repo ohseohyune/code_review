@@ -52,9 +52,6 @@ class ProjectAnalysis:
     imports: dict[str, list[str]] = field(default_factory=dict)  # file_path -> dotted module names
 
 
-NON_PYTHON_SOURCE_EXTS = {".yaml", ".yml", ".md", ".txt", ".json"}
-
-
 def classify_files(root: Path) -> tuple[list[Path], list[dict]]:
     py_files, excluded = [], []
     for p in sorted(root.rglob("*")):
@@ -63,19 +60,17 @@ def classify_files(root: Path) -> tuple[list[Path], list[dict]]:
         rel = p.relative_to(root).as_posix()
         if p.suffix == ".py":
             py_files.append(p)
-        elif p.suffix in NON_PYTHON_SOURCE_EXTS:
-            continue  # not code, not "excluded" either -- just not analyzed as source
         else:
             excluded.append({"path": rel, "reason": "지원하지 않는 형식"})
     return py_files, excluded
 
 
 def list_scannable_files(root: Path) -> list[str]:
-    """.py plus the kept-but-unanalyzed config/doc files (yaml/json/md/txt) --
-    everything that actually reached disk and could plausibly hold a leaked
-    credential, not just the subset AST analysis happens to touch.
+    """Only .py reaches disk now (upload only accepts Python source), but this stays
+    separate from classify_files' py_files since it also covers what secret-scanning
+    should look at if that ever widens again.
     """
-    exts = {".py"} | NON_PYTHON_SOURCE_EXTS
+    exts = {".py"}
     return [p.relative_to(root).as_posix() for p in sorted(root.rglob("*"))
             if p.is_file() and p.suffix in exts]
 
