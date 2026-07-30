@@ -109,12 +109,33 @@ export default function ExplorerPanel({
             {tree.classes.length > 0 && (
               <div className="px-2 py-1 text-[10.5px] font-bold tracking-wide text-[rgba(60,60,67,.45)]">CLASSES</div>
             )}
-            {tree.classes.map((c) => (
-              <div key={c.id} className="flex items-center gap-1.5 px-2 py-1.5 text-[12.5px]">
-                <span className="text-[#007AFF]">C</span>
-                <span className="font-mono truncate">{c.name}</span>
-              </div>
-            ))}
+            {tree.classes.map((c) => {
+              // A class has no page of its own -- the workspace is per-function -- so
+              // clicking one opens its first method. Classes whose methods all live
+              // elsewhere (or that have none) stay unclickable rather than dead links.
+              const firstMethod = tree.functions.find(
+                (fn) => fn.class_name === c.name && fn.file_path === c.file_path
+              );
+              const inner = (
+                <>
+                  <span className="text-[#007AFF]">C</span>
+                  <span className="font-mono truncate">{c.name}</span>
+                </>
+              );
+              return firstMethod ? (
+                <Link
+                  key={c.id}
+                  href={`/projects/${projectId}/workspace/${encodeURIComponent(firstMethod.id)}`}
+                  className="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-[12.5px] hover:bg-[rgba(120,120,128,.10)]"
+                >
+                  {inner}
+                </Link>
+              ) : (
+                <div key={c.id} className="flex items-center gap-1.5 px-2 py-1.5 text-[12.5px] text-[rgba(60,60,67,.5)]">
+                  {inner}
+                </div>
+              );
+            })}
             <div className="px-2 py-1 text-[10.5px] font-bold tracking-wide text-[rgba(60,60,67,.45)]">FUNCTIONS</div>
             {filteredFns.map((fn) => (
               <Row key={fn.id} fn={fn} />
