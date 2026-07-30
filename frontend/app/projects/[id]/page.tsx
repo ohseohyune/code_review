@@ -26,14 +26,8 @@ export default async function OverviewPage({ params }: { params: Promise<{ id: s
             {project.summary}
           </p>
         </div>
-        <div className="flex shrink-0 items-center gap-3">
+        <div className="shrink-0">
           <DeleteProjectButton projectId={id} />
-          <Link
-            href={`/projects/${id}/workspace/${encodeURIComponent(project.learning_path[0]?.function_id ?? "")}`}
-            className="flex h-11 items-center rounded-xl bg-[#007AFF] px-6 text-[14.5px] font-semibold text-white"
-          >
-            워크스페이스 열기 →
-          </Link>
         </div>
       </div>
 
@@ -109,6 +103,16 @@ export default async function OverviewPage({ params }: { params: Promise<{ id: s
             </div>
           )}
         </div>
+      </div>
+
+      <div className="mt-10 text-center">
+        <Link
+          href={`/projects/${id}/workspace/${encodeURIComponent(project.learning_path[0]?.function_id ?? "")}`}
+          className="inline-flex h-14 items-center rounded-2xl bg-[#007AFF] px-10 text-[17px] font-semibold text-white"
+          style={{ boxShadow: "0 6px 20px rgba(0,122,255,.28)" }}
+        >
+          워크스페이스 열기 →
+        </Link>
       </div>
     </div>
   );
