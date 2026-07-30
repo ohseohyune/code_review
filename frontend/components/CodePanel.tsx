@@ -5,7 +5,7 @@ import type { FunctionSource, Note } from "@/lib/types";
 import { useHighlight } from "@/lib/highlight-context";
 import { useAsk } from "@/lib/ask-context";
 import { api } from "@/lib/api";
-import { getReadLine, markReadLine } from "@/lib/progress";
+import { getReadLine, setReadLine as persistReadLine } from "@/lib/progress";
 
 type Selection = { text: string; top: number; left: number; startLine: number; endLine: number };
 
@@ -17,7 +17,6 @@ export default function CodePanel({ fn }: { fn: FunctionSource }) {
   const decorationIds = useRef<string[]>([]);
   const noteDecorationIds = useRef<string[]>([]);
   const readDecorationIds = useRef<string[]>([]);
-  const readDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [startLine] = fn.line_range;
   const [selection, setSelection] = useState<Selection | null>(null);
   const [composing, setComposing] = useState(false);
@@ -25,23 +24,16 @@ export default function CodePanel({ fn }: { fn: FunctionSource }) {
   const [notes, setNotes] = useState<Note[]>([]);
   const [showNotes, setShowNotes] = useState(false);
   const [readLine, setReadLine] = useState(0);
+  const readLineRef = useRef(0);
 
   useEffect(() => {
     setNotes([]);
     setShowNotes(false);
     api.listNotes(fn.id).then(setNotes).catch(() => {});
-    setReadLine(getReadLine(fn.id));
+    const line = getReadLine(fn.id);
+    readLineRef.current = line;
+    setReadLine(line);
   }, [fn.id]);
-
-  function trackReadProgress(editor: NonNullable<typeof editorRef.current>) {
-    if (readDebounce.current) clearTimeout(readDebounce.current);
-    readDebounce.current = setTimeout(() => {
-      const ranges = editor.getVisibleRanges();
-      const bottom = ranges[ranges.length - 1]?.endLineNumber;
-      if (!bottom) return;
-      setReadLine(markReadLine(fn.id, startLine + bottom - 1));
-    }, 400);
-  }
 
   const onMount: OnMount = (editor, monaco) => {
     editorRef.current = editor;
@@ -52,6 +44,20 @@ export default function CodePanel({ fn }: { fn: FunctionSource }) {
       set([startLine + line - 1], `${startLine + line - 1}행 → 수식`);
     });
     editor.onMouseLeave(() => clear());
+
+    // Click the gutter (glyph margin or line-number strip) to the left of a line
+    // to bookmark "I've read up to here" -- clicking the already-marked line clears it.
+    editor.onMouseDown((e) => {
+      const type = e.target.type;
+      const isGutter = type === monaco.editor.MouseTargetType.GUTTER_GLYPH_MARGIN
+        || type === monaco.editor.MouseTargetType.GUTTER_LINE_NUMBERS;
+      const line = e.target.position?.lineNumber;
+      if (!isGutter || !line) return;
+      const absolute = startLine + line - 1;
+      const next = readLineRef.current === absolute ? 0 : absolute;
+      readLineRef.current = next;
+      setReadLine(persistReadLine(fn.id, next));
+    });
 
     editor.onDidChangeCursorSelection((e) => {
       const text = editor.getModel()?.getValueInRange(e.selection) ?? "";
@@ -76,9 +82,7 @@ export default function CodePanel({ fn }: { fn: FunctionSource }) {
     editor.onDidScrollChange(() => {
       setSelection(null);
       setComposing(false);
-      trackReadProgress(editor);
     });
-    trackReadProgress(editor);
   };
 
   function clearSelection() {

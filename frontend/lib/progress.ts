@@ -33,17 +33,16 @@ export function setMode(mode: TeacherMode) {
   localStorage.setItem(MODE_KEY, mode);
 }
 
-// Furthest line the user has scrolled to within a function -- a rough "read up to
-// here" marker so re-opening a long function shows where they left off, instead of
-// them having to scroll and guess. Per-function, per-browser; never overwrites a
-// deeper mark with a shallower one (scrolling back up shouldn't erase progress).
+// A user-placed "읽던 위치" bookmark within a function -- clicking the gutter next
+// to a line number marks it (💩), so re-opening a long function after going back
+// and forth shows exactly where they left off instead of them having to guess.
+// One per function; 0 means unmarked.
 export function getReadLine(fnId: string): number {
   if (typeof window === "undefined") return 0;
   return Number(localStorage.getItem(READ_LINE_KEY(fnId)) ?? 0);
 }
 
-export function markReadLine(fnId: string, line: number): number {
-  const furthest = Math.max(getReadLine(fnId), line);
-  localStorage.setItem(READ_LINE_KEY(fnId), String(furthest));
-  return furthest;
+export function setReadLine(fnId: string, line: number): number {
+  localStorage.setItem(READ_LINE_KEY(fnId), String(line));
+  return line;
 }
