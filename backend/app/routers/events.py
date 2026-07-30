@@ -21,7 +21,8 @@ EventName = Literal[
     "project_analysis_failed", "learning_path_started", "learning_step_completed",
     "function_selected", "equation_viewed", "shape_viewed", "data_flow_viewed",
     "review_opened", "review_issue_opened", "question_submitted",
-    "suggested_question_clicked", "explanation_feedback_submitted", "project_deleted",
+    "suggested_question_clicked", "code_selection_asked",
+    "explanation_feedback_submitted", "project_deleted",
 ]
 
 PropValue = str | int | float | bool | None

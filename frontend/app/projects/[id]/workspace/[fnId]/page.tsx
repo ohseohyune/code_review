@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
 import type { ProjectTree, FunctionSource, FunctionAnalysis, LearningStep } from "@/lib/types";
 import { HighlightProvider } from "@/lib/highlight-context";
+import { AskProvider } from "@/lib/ask-context";
 import { getDone, markDone, getMode, setMode as persistMode, type TeacherMode } from "@/lib/progress";
 import { track } from "@/lib/analytics";
 import ExplorerPanel from "@/components/ExplorerPanel";
@@ -87,6 +88,7 @@ export default function WorkspacePage({
 
   return (
     <HighlightProvider>
+    <AskProvider>
       <div className="flex h-screen min-w-[1680px] flex-col">
         <div
           className="flex h-12 shrink-0 items-center gap-2 px-4 text-[13px] backdrop-blur-md bg-white/80"
@@ -160,6 +162,7 @@ export default function WorkspacePage({
           />
         </div>
       </div>
+    </AskProvider>
     </HighlightProvider>
   );
 }

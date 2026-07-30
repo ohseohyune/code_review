@@ -1,15 +1,20 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Editor, { OnMount } from "@monaco-editor/react";
 import type { FunctionSource } from "@/lib/types";
 import { useHighlight } from "@/lib/highlight-context";
+import { useAsk } from "@/lib/ask-context";
+
+type Selection = { text: string; top: number; left: number };
 
 export default function CodePanel({ fn }: { fn: FunctionSource }) {
   const { highlight, set, clear } = useHighlight();
+  const { ask } = useAsk();
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
   const monacoRef = useRef<Parameters<OnMount>[1] | null>(null);
   const decorationIds = useRef<string[]>([]);
   const [startLine] = fn.line_range;
+  const [selection, setSelection] = useState<Selection | null>(null);
 
   const onMount: OnMount = (editor, monaco) => {
     editorRef.current = editor;
@@ -20,7 +25,29 @@ export default function CodePanel({ fn }: { fn: FunctionSource }) {
       set([startLine + line - 1], `${startLine + line - 1}행 → 수식`);
     });
     editor.onMouseLeave(() => clear());
+
+    editor.onDidChangeCursorSelection((e) => {
+      const text = editor.getModel()?.getValueInRange(e.selection) ?? "";
+      if (!text.trim()) {
+        setSelection(null);
+        return;
+      }
+      const pos = editor.getScrolledVisiblePosition({
+        lineNumber: e.selection.endLineNumber,
+        column: e.selection.endColumn,
+      });
+      if (!pos) return;
+      setSelection({ text, top: pos.top + pos.height, left: pos.left });
+    });
+    editor.onDidScrollChange(() => setSelection(null));
   };
+
+  function explainSelection() {
+    if (!selection) return;
+    ask(`이 부분 코드를 설명해줘:\n\`\`\`python\n${selection.text}\n\`\`\``);
+    setSelection(null);
+    editorRef.current?.setSelection({ startLineNumber: 1, startColumn: 1, endLineNumber: 1, endColumn: 1 });
+  }
 
   useEffect(() => {
     const editor = editorRef.current;
@@ -58,7 +85,7 @@ export default function CodePanel({ fn }: { fn: FunctionSource }) {
           </span>
         )}
       </div>
-      <div className="flex-1">
+      <div className="relative flex-1">
         <Editor
           height="100%"
           language="python"
@@ -76,6 +103,15 @@ export default function CodePanel({ fn }: { fn: FunctionSource }) {
             padding: { top: 8 },
           }}
         />
+        {selection && (
+          <button
+            onClick={explainSelection}
+            className="absolute z-10 flex h-8 items-center gap-1.5 rounded-full px-3 text-[12px] font-semibold text-white"
+            style={{ top: selection.top + 4, left: selection.left, background: "#007AFF", boxShadow: "0 4px 12px rgba(0,0,0,.18)" }}
+          >
+            💬 이 부분 설명 듣기
+          </button>
+        )}
       </div>
     </div>
   );

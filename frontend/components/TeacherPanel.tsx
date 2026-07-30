@@ -5,6 +5,7 @@ import type { FunctionAnalysis, VariableInfo, Issue, ChatMessage } from "@/lib/t
 import { SEVERITY, EQUATION_REPRESENTATION, STEP_LABELS } from "@/lib/certainty";
 import type { TeacherMode } from "@/lib/progress";
 import { useHighlight } from "@/lib/highlight-context";
+import { useAsk } from "@/lib/ask-context";
 import { api, ApiError } from "@/lib/api";
 import { track } from "@/lib/analytics";
 import CardShell from "./CardShell";
@@ -64,6 +65,7 @@ function TeacherComposer({ fnId, projectId }: { fnId: string; projectId: string 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const { setHandler } = useAsk();
 
   useEffect(() => {
     setChat([]);
@@ -75,11 +77,16 @@ function TeacherComposer({ fnId, projectId }: { fnId: string; projectId: string 
     bottomRef.current?.scrollIntoView({ block: "nearest" });
   }, [chat]);
 
-  async function ask(question: string, isChip: boolean) {
+  async function ask(question: string, source: "chip" | "manual" | "selection" = "manual") {
     if (!question.trim() || busy) return;
     setBusy(true);
     setError(null);
-    track(isChip ? "suggested_question_clicked" : "question_submitted", { projectId, functionId: fnId });
+    track(
+      source === "chip" ? "suggested_question_clicked"
+      : source === "selection" ? "code_selection_asked"
+      : "question_submitted",
+      { projectId, functionId: fnId }
+    );
     const history = chat;
     setChat((c) => [...c, { role: "user", text: question }]);
     setDraft("");
@@ -92,6 +99,10 @@ function TeacherComposer({ fnId, projectId }: { fnId: string; projectId: string 
       setBusy(false);
     }
   }
+
+  useEffect(() => {
+    setHandler((question: string) => ask(question, "selection"));
+  });
 
   return (
     <div className="border-t bg-white p-3" style={{ borderColor: "rgba(84,84,86,.18)" }}>
@@ -118,7 +129,7 @@ function TeacherComposer({ fnId, projectId }: { fnId: string; projectId: string 
         {QUESTION_CHIPS.map((q) => (
           <button
             key={q}
-            onClick={() => ask(q, true)}
+            onClick={() => ask(q, "chip")}
             disabled={busy}
             className="rounded-full px-2.5 py-1 text-[11px] font-medium disabled:opacity-50"
             style={{ background: "rgba(0,122,255,.1)", color: "#0062CC" }}
@@ -131,13 +142,13 @@ function TeacherComposer({ fnId, projectId }: { fnId: string; projectId: string 
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && ask(draft, false)}
+          onKeyDown={(e) => e.key === "Enter" && ask(draft)}
           placeholder="이 함수에 대해 질문하기 — 현재 문맥이 자동 첨부됩니다"
           className="h-9 flex-1 rounded-full px-3.5 text-[13px] outline-none focus:ring-2 focus:ring-[#007AFF]"
           style={{ background: "rgba(120,120,128,.10)" }}
         />
         <button
-          onClick={() => ask(draft, false)}
+          onClick={() => ask(draft)}
           disabled={busy || !draft.trim()}
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#007AFF] text-white disabled:opacity-50"
         >

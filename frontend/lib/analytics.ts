@@ -17,6 +17,7 @@ export type EventName =
   | "review_issue_opened"
   | "question_submitted"
   | "suggested_question_clicked"
+  | "code_selection_asked"
   | "explanation_feedback_submitted"
   | "project_deleted";
 
