@@ -10,6 +10,14 @@ function pathOf(f: File): string {
   return (f as any).webkitRelativePath || f.name;
 }
 
+// Common entry-script filenames -- pre-marked as entry points automatically so
+// most users never have to hunt for a toggle at all.
+const ENTRY_NAME_HINTS = new Set(["main.py", "app.py", "run.py", "__main__.py", "train.py"]);
+
+function guessEntryPaths(accepted: File[]): Set<string> {
+  return new Set(accepted.filter((f) => ENTRY_NAME_HINTS.has(pathOf(f).split("/").pop() ?? "")).map(pathOf));
+}
+
 // Kept in sync with the backend's _safe_dest() allowlist (app/routers/projects.py):
 // only .py reaches disk, so only .py is worth showing as "accepted" here.
 function classify(name: string): string | null {
@@ -69,7 +77,7 @@ export default function UploadPage() {
   function resetSelection(accepted: File[], rej: Rejected[]) {
     setFiles(accepted);
     setRejected(rej);
-    setEntryPaths(new Set());
+    setEntryPaths(guessEntryPaths(accepted));
     setSelected(null);
   }
 
@@ -248,8 +256,8 @@ export default function UploadPage() {
           <div className="mt-4 flex items-center gap-2 rounded-xl px-4 py-2.5" style={{ border: "0.5px solid rgba(84,84,86,.18)", background: "rgba(0,122,255,.04)" }}>
             <p className="flex-1 text-[12.5px] text-[rgba(60,60,67,.65)]">
               {entryPaths.size === 0
-                ? "진입 파일(예: main.py) 옆의 ★을 눌러 표시하세요."
-                : `진입 파일 ${entryPaths.size}개 선택됨 — 실제로 사용하는 파일만 자동으로 골라줍니다.`}
+                ? "아래 목록에서 파일 옆의 \"진입점으로 지정\" 버튼을 눌러 main.py 같은 시작 파일을 표시하세요."
+                : `진입 파일 ${entryPaths.size}개 선택됨 (main.py 등은 자동 선택됨) — 실제로 사용하는 파일만 자동으로 골라줍니다.`}
             </p>
             <button
               onClick={autoSelectRelated}
@@ -268,7 +276,7 @@ export default function UploadPage() {
               선택된 파일 {includedFiles.length}개 / {files.length}개
               {rejected.length > 0 && <span className="text-[#C93400]"> · {rejected.length}개 제외됨</span>}
             </div>
-            <div className="max-h-40 overflow-y-auto">
+            <div className="max-h-56 overflow-y-auto">
               {files.map((f) => {
                 const path = pathOf(f);
                 const isPy = path.toLowerCase().endsWith(".py");
@@ -286,17 +294,20 @@ export default function UploadPage() {
                       onChange={() => toggleSelected(path)}
                       className="shrink-0"
                     />
+                    <span className="flex-1 truncate">{path}</span>
                     {isPy && (
                       <button
                         onClick={() => toggleEntry(path)}
-                        title="진입 파일로 표시"
-                        className="shrink-0 text-[13px]"
-                        style={{ color: isEntry ? "#FF9500" : "rgba(60,60,67,.25)" }}
+                        className="shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold"
+                        style={
+                          isEntry
+                            ? { background: "#FF9500", color: "white" }
+                            : { background: "rgba(120,120,128,.14)", color: "rgba(60,60,67,.6)" }
+                        }
                       >
-                        ★
+                        {isEntry ? "★ 진입점" : "진입점으로 지정"}
                       </button>
                     )}
-                    <span className="truncate">{path}</span>
                   </div>
                 );
               })}
