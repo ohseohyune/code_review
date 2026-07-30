@@ -65,6 +65,7 @@ function TeacherComposer({ fnId, projectId }: { fnId: string; projectId: string 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
   const { setHandler } = useAsk();
 
   useEffect(() => {
@@ -90,14 +91,25 @@ function TeacherComposer({ fnId, projectId }: { fnId: string; projectId: string 
     const history = chat;
     setChat((c) => [...c, { role: "user", text: question }]);
     setDraft("");
+    const controller = new AbortController();
+    abortRef.current = controller;
     try {
-      const res = await api.askFunction(fnId, question, history);
+      const res = await api.askFunction(fnId, question, history, controller.signal);
       setChat((c) => [...c, { role: "ai", text: res.answer }]);
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : "질문에 답하지 못했습니다.");
+      if (e instanceof DOMException && e.name === "AbortError") {
+        setChat((c) => [...c, { role: "ai", text: "(중지됨)" }]);
+      } else {
+        setError(e instanceof ApiError ? e.message : "질문에 답하지 못했습니다.");
+      }
     } finally {
+      abortRef.current = null;
       setBusy(false);
     }
+  }
+
+  function stop() {
+    abortRef.current?.abort();
   }
 
   useEffect(() => {
@@ -147,13 +159,23 @@ function TeacherComposer({ fnId, projectId }: { fnId: string; projectId: string 
           className="h-9 flex-1 rounded-full px-3.5 text-[13px] outline-none focus:ring-2 focus:ring-[#007AFF]"
           style={{ background: "rgba(120,120,128,.10)" }}
         />
-        <button
-          onClick={() => ask(draft)}
-          disabled={busy || !draft.trim()}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#007AFF] text-white disabled:opacity-50"
-        >
-          ↑
-        </button>
+        {busy ? (
+          <button
+            onClick={stop}
+            title="중지"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#8E8E93] text-white"
+          >
+            <span className="h-2.5 w-2.5 rounded-[2px] bg-white" />
+          </button>
+        ) : (
+          <button
+            onClick={() => ask(draft)}
+            disabled={!draft.trim()}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#007AFF] text-white disabled:opacity-50"
+          >
+            ↑
+          </button>
+        )}
       </div>
     </div>
   );

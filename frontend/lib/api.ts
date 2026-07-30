@@ -82,11 +82,12 @@ export const api = {
   retryAnalysis: (fnId: string) =>
     req<FunctionAnalysis>(`/functions/${fnId}/retry`, { method: "POST" }),
 
-  askFunction: (fnId: string, question: string, history: ChatMessage[]) =>
+  askFunction: (fnId: string, question: string, history: ChatMessage[], signal?: AbortSignal) =>
     req<AskResponse>(`/functions/${fnId}/ask`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question, history }),
+      signal,
     }),
 
   deleteProject: (id: string) => req<{ ok: boolean }>(`/projects/${id}`, { method: "DELETE" }),
