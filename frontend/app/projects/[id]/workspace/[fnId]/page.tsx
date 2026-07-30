@@ -110,6 +110,7 @@ export default function WorkspacePage({
               { label: "수식 보기", onClick: () => changeStep(2), active: step === 2 },
               { label: "데이터 흐름", onClick: () => changeStep(4), active: step === 4 },
               { label: "코드 리뷰", onClick: () => router.push(`/projects/${id}/review`) },
+              { label: "📝🤯 모아보기", onClick: () => router.push(`/projects/${id}/notes`) },
             ].map((tab) => (
               <button
                 key={tab.label}

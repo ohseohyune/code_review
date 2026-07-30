@@ -19,7 +19,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "https://suggested-cells-operated-cross.trycloudflare.com",
+        "https://description-particle-gap-camp.trycloudflare.com",
     ],
     allow_methods=["*"],
     allow_headers=["*"],

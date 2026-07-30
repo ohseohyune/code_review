@@ -90,30 +90,19 @@ export default async function OverviewPage({ params }: { params: Promise<{ id: s
       </div>
 
       {notes.length > 0 && (
-        <div className="mt-4 rounded-2xl bg-white p-5" style={{ border: "0.5px solid rgba(84,84,86,.18)" }}>
+        <Link
+          href={`/projects/${id}/notes`}
+          className="mt-4 flex items-center gap-3 rounded-2xl bg-white p-5 hover:bg-[rgba(120,120,128,.04)]"
+          style={{ border: "0.5px solid rgba(84,84,86,.18)" }}
+        >
           <h2 className="text-[15px] font-semibold">
             📝🤯 모아보기 <span className="text-[rgba(60,60,67,.45)]">({notes.length}개)</span>
           </h2>
-          <div className="mt-3 flex flex-col gap-1.5">
-            {notes.map((note) => (
-              <Link
-                key={note.id}
-                href={`/projects/${id}/workspace/${encodeURIComponent(note.function_id)}`}
-                className="flex flex-col gap-1 rounded-xl px-3 py-2.5 hover:bg-[rgba(120,120,128,.06)]"
-                style={{ border: "0.5px solid rgba(84,84,86,.12)" }}
-              >
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="shrink-0">{note.kind === "confused" ? "🤯" : "📝"}</span>
-                  <span className="font-mono text-[12px] font-semibold break-all">{note.qualified_name}</span>
-                  <span className="font-mono text-[11px] text-[rgba(60,60,67,.45)] shrink-0">{note.start_line}행</span>
-                </div>
-                <p className="whitespace-pre-wrap break-words text-[12.5px] text-[rgba(60,60,67,.65)]">
-                  {note.text || "헷갈리는 부분"}
-                </p>
-              </Link>
-            ))}
-          </div>
-        </div>
+          <span className="text-[13px] text-[rgba(60,60,67,.5)]">
+            {notes.filter((n) => n.kind === "confused").length}개의 헷갈리는 부분 포함
+          </span>
+          <span className="ml-auto text-[13px] font-semibold text-[#007AFF]">전체 보기 →</span>
+        </Link>
       )}
 
       <div className="mt-8 text-center">
