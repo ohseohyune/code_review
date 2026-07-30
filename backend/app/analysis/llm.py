@@ -45,16 +45,48 @@ def _strict_schema(schema: dict) -> dict:
 
 
 _CONTROL_CHAR_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
-
-
 _REPEATED_TAB_RE = re.compile(r"[ \t]{2,}")
+
+# The model often writes real LaTeX like \texttt{\textunderscore} for a code
+# identifier -- but json.loads treats "\t" as a single-character escape (JSON's own
+# tab/backspace/form-feed/CR escapes), silently swallowing the backslash AND the
+# letter that followed it (\t -> one tab char, not "\" + "t"). "\texttt" round-trips
+# through JSON as a lone TAB followed by "exttt". Undo that by expanding each control
+# char back into the two source characters JSON's own escape table says it came from --
+# scoped to just the equation's LaTeX-bearing fields, where a stray backslash is always
+# a macro, never restored in plain prose fields where the same byte is just garbage
+# (see _strip_control_chars, which handles that case by deleting it instead).
+_JSON_ESCAPE_RESTORE = {"\x08": "\\b", "\x09": "\\t", "\x0c": "\\f", "\x0d": "\\r"}
+_JSON_ESCAPE_RESTORE_RE = re.compile("[" + "".join(_JSON_ESCAPE_RESTORE) + "]")
+
+
+def _restore_latex_escapes(s: str) -> str:
+    return _JSON_ESCAPE_RESTORE_RE.sub(lambda m: _JSON_ESCAPE_RESTORE[m.group()], s)
+
+
+def _fix_equation_latex_escapes(raw: dict) -> dict:
+    eq = raw.get("equation")
+    if not isinstance(eq, dict):
+        return raw
+    if isinstance(eq.get("latex"), str):
+        eq["latex"] = _restore_latex_escapes(eq["latex"])
+    for tok in eq.get("tokens") or []:
+        if isinstance(tok, dict) and isinstance(tok.get("text"), str):
+            tok["text"] = _restore_latex_escapes(tok["text"])
+    for step in eq.get("steps") or []:
+        if isinstance(step, dict) and isinstance(step.get("latex"), str):
+            step["latex"] = _restore_latex_escapes(step["latex"])
+    for m in eq.get("mapping") or []:
+        if isinstance(m, dict) and isinstance(m.get("symbol"), str):
+            m["symbol"] = _restore_latex_escapes(m["symbol"])
+    return raw
 
 
 def _strip_control_chars(value):
     """gpt-4o's strict-JSON mode occasionally corrupts text into raw control characters
     or runs of stray tabs instead of the intended glyphs -- rare, but json.loads still
-    accepts it (they arrive as valid \\u00xx escapes / literal tabs), so it reaches the
-    UI as visible garbage unless cleaned here, once, right after parsing.
+    accepts it, so it reaches the UI as visible garbage unless cleaned here, once,
+    right after parsing.
     """
     if isinstance(value, str):
         return _REPEATED_TAB_RE.sub(" ", _CONTROL_CHAR_RE.sub("", value))
@@ -83,7 +115,7 @@ def _call_structured(system_prompt: str, user_content: str, schema_model: type[B
             {"role": "user", "content": user_content},
         ],
     )
-    raw = _strip_control_chars(json.loads(resp.choices[0].message.content))
+    raw = _strip_control_chars(_fix_equation_latex_escapes(json.loads(resp.choices[0].message.content)))
     return schema_model.model_validate(raw)
 
 
@@ -179,6 +211,19 @@ multiple tokens; \\begin{...} and \\end{...} must always appear together inside 
 with the full environment body (all rows, &, \\\\) included in that one token. For a matrix, that means \
 ONE token holds the entire \\begin{bmatrix}...\\end{bmatrix} block -- do not emit \\begin{bmatrix}, then \
 separate tokens for each cell, then \\end{bmatrix}; each would fail to parse alone.
+- equation.mapping[].symbol is rendered as PLAIN TEXT, never through KaTeX -- it must be a bare symbol \
+like "W" or "b_1" or "transform", never LaTeX markup like "\\text{transform}" or anything with a backslash \
+or braces in it. equation.mapping[].code is the exact source expression it stands for (e.g. "data.site_xmat").
+- When a function builds up its result across SEVERAL lines (assigns into a matrix/tensor piece by piece, \
+accumulates a value, branches into different formulas per case), fill equation.steps: one entry per \
+meaningful line or tight group of lines, in source order. Each step's code is the verbatim source snippet \
+for just that line/group, code_lines its real line numbers, latex the resulting partial expression in that \
+step as one LaTeX string (e.g. step 1 for `transform = np.eye(4)` -> latex "T = I_4"; step 2 for \
+`transform[:3,:3] = R` -> latex "T_{0:3,0:3} = R"), and explanation one short Korean sentence for that step \
+alone. This is the primary way multi-line derivations should be shown -- prefer populating steps over \
+cramming everything into equation.tokens when the function has more than one meaningful computational line. \
+equation.tokens should still hold the final combined formula (or stay minimal if steps already tells the \
+story); equation.latex likewise holds the final result, not a duplicate of the steps.
 - shape entries are symbolic (e.g. "B", "6", "5") when the batch dimension is runtime-only; never \
 invent a concrete batch size.
 - The context includes a STATICALLY VERIFIED SHAPES section produced by deterministic AST analysis \

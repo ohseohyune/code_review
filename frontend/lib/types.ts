@@ -34,6 +34,13 @@ export interface SymbolMapping {
   code_lines: number[];
 }
 
+export interface EquationStep {
+  code: string;
+  code_lines: number[];
+  latex: string;
+  explanation: string;
+}
+
 export interface PiecewiseBranch {
   condition: string;
   value: string;
@@ -58,6 +65,7 @@ export interface EquationInfo {
     | "sequence";
   latex: string | null;
   tokens: MathToken[];
+  steps: EquationStep[];
   mapping: SymbolMapping[];
   piecewise: PiecewiseBranch[];
   diagram: StateTransition[];

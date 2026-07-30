@@ -6,6 +6,7 @@ import { SEVERITY, EQUATION_REPRESENTATION, STEP_LABELS } from "@/lib/certainty"
 import type { TeacherMode } from "@/lib/progress";
 import { useHighlight } from "@/lib/highlight-context";
 import { useAsk } from "@/lib/ask-context";
+import { renderTex, plainSymbol } from "@/lib/katex-render";
 import { api, ApiError } from "@/lib/api";
 import { track } from "@/lib/analytics";
 import CardShell from "./CardShell";
@@ -446,6 +447,34 @@ export default function TeacherPanel({
                     <span className="mb-2 inline-block rounded-full bg-[rgba(0,122,255,.1)] px-2.5 py-1 text-[11px] font-semibold text-[#0062CC]">
                       {EQUATION_REPRESENTATION[analysis.equation.representation] ?? analysis.equation.representation}
                     </span>
+                    {analysis.equation.steps.length > 0 && (
+                      <div className="mb-3 flex flex-col gap-3">
+                        {analysis.equation.steps.map((step, i) => (
+                          <div
+                            key={i}
+                            className="rounded-xl p-3"
+                            style={{ border: "0.5px solid rgba(84,84,86,.16)" }}
+                            onMouseEnter={() => step.code_lines.length > 0 && set(step.code_lines, `${i + 1}단계 → 코드`)}
+                            onMouseLeave={clear}
+                          >
+                            <div className="mb-2 flex items-center gap-2">
+                              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[rgba(0,122,255,.12)] text-[10.5px] font-bold text-[#0062CC]">
+                                {i + 1}
+                              </span>
+                              <code className="flex-1 overflow-x-auto whitespace-pre font-mono text-[12px]" style={{ background: "#FAFAFC", padding: "4px 8px", borderRadius: 6 }}>
+                                {step.code}
+                              </code>
+                            </div>
+                            <div
+                              className="rounded-lg px-3 py-2.5 text-[17px]"
+                              style={{ background: "#FAFAFC", fontFamily: "Georgia, 'Times New Roman', serif" }}
+                              dangerouslySetInnerHTML={{ __html: renderTex(step.latex) }}
+                            />
+                            <p className="mt-1.5 text-[12.5px] leading-snug text-[rgba(60,60,67,.7)]">{step.explanation}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     <FormulaView
                       tokens={analysis.equation.tokens}
                       ariaLabel={analysis.equation.latex ?? undefined}
@@ -476,10 +505,10 @@ export default function TeacherPanel({
                           <div
                             key={i}
                             className="flex items-center justify-between rounded-lg bg-[#FAFAFC] px-2.5 py-1.5 text-[12.5px] font-mono cursor-pointer"
-                            onMouseEnter={() => set(m.code_lines, `${m.symbol} ↔ 코드`)}
+                            onMouseEnter={() => set(m.code_lines, `${plainSymbol(m.symbol)} ↔ 코드`)}
                             onMouseLeave={clear}
                           >
-                            <span>{m.symbol}</span>
+                            <span>{plainSymbol(m.symbol)}</span>
                             <span className="text-[rgba(60,60,67,.6)]">{m.code}</span>
                           </div>
                         ))}

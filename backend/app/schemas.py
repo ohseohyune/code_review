@@ -39,6 +39,13 @@ class SymbolMapping(BaseModel):
     code_lines: list[int]
 
 
+class EquationStep(BaseModel):
+    code: str
+    code_lines: list[int]
+    latex: str
+    explanation: str
+
+
 class PiecewiseBranch(BaseModel):
     condition: str
     value: str
@@ -57,6 +64,7 @@ class EquationInfo(BaseModel):
     ]
     latex: str | None = None
     tokens: list[MathToken] = []
+    steps: list[EquationStep] = []
     mapping: list[SymbolMapping] = []
     piecewise: list[PiecewiseBranch] = []
     diagram: list[StateTransition] = []
