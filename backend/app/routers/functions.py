@@ -1,13 +1,14 @@
 import logging
 import os
+import uuid
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db import get_db
-from app.models import FunctionRow, ProjectRow
-from app.schemas import FunctionSource, FunctionAnalysis, AskRequest, AskResponse
+from app.models import FunctionRow, ProjectRow, NoteRow
+from app.schemas import FunctionSource, FunctionAnalysis, AskRequest, AskResponse, Note, NoteCreate
 from app.analysis.ast_parser import analyze_project, FunctionRecord, ProjectAnalysis
 from app.analysis.llm import analyze_function, answer_question
 from app.analysis.static_summary import build_static_analysis
@@ -114,3 +115,33 @@ def ask_function(function_id: str, body: AskRequest, db: Session = Depends(get_d
 
     answer, evidence = answer_question(record, project_analysis, body.question, body.history)
     return AskResponse(answer=answer, evidence=evidence)
+
+
+@router.get("/{function_id}/notes", response_model=list[Note])
+def list_notes(function_id: str, db: Session = Depends(get_db)):
+    _get_or_404(db, function_id)
+    rows = db.query(NoteRow).filter(NoteRow.function_id == function_id).order_by(NoteRow.start_line).all()
+    return [Note(id=r.id, function_id=r.function_id, start_line=r.start_line, end_line=r.end_line, text=r.text)
+            for r in rows]
+
+
+@router.post("/{function_id}/notes", response_model=Note)
+def create_note(function_id: str, body: NoteCreate, db: Session = Depends(get_db)):
+    _get_or_404(db, function_id)
+    if not body.text.strip():
+        raise HTTPException(400, "메모 내용이 비어 있습니다.")
+    row = NoteRow(id=str(uuid.uuid4()), function_id=function_id,
+                   start_line=body.start_line, end_line=body.end_line, text=body.text.strip())
+    db.add(row)
+    db.commit()
+    return Note(id=row.id, function_id=row.function_id, start_line=row.start_line,
+                end_line=row.end_line, text=row.text)
+
+
+@router.delete("/{function_id}/notes/{note_id}")
+def delete_note(function_id: str, note_id: str, db: Session = Depends(get_db)):
+    row = db.get(NoteRow, note_id)
+    if row and row.function_id == function_id:
+        db.delete(row)
+        db.commit()
+    return {"ok": True}

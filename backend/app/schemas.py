@@ -206,3 +206,17 @@ class AskRequest(BaseModel):
 class AskResponse(BaseModel):
     answer: str
     evidence: list[CodeRef]
+
+
+class NoteCreate(BaseModel):
+    start_line: int
+    end_line: int
+    text: str
+
+
+class Note(BaseModel):
+    id: str
+    function_id: str
+    start_line: int
+    end_line: int
+    text: str

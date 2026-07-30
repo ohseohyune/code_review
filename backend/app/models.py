@@ -62,3 +62,14 @@ class FunctionRow(Base):
     analysis_json = Column(JSON, nullable=True)   # cached FunctionAnalysis, filled by LLM call
 
     project = relationship("ProjectRow", back_populates="functions")
+
+
+class NoteRow(Base):
+    __tablename__ = "notes"
+
+    id = Column(String, primary_key=True)
+    function_id = Column(String, ForeignKey("functions.id"))
+    start_line = Column(Integer)
+    end_line = Column(Integer)
+    text = Column(Text)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))

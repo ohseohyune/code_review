@@ -207,3 +207,11 @@ export interface ProjectGraph {
   edges: GraphEdge[];
   cycles: string[][];
 }
+
+export interface Note {
+  id: string;
+  function_id: string;
+  start_line: number;
+  end_line: number;
+  text: string;
+}

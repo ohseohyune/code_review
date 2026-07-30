@@ -46,3 +46,11 @@
 .highlight-line-bar {
   border-left: 2px solid #ffcc00;
 }
+
+.note-line {
+  background: rgba(255, 149, 0, 0.08) !important;
+}
+.note-glyph::after {
+  content: "📝";
+  font-size: 11px;
+}

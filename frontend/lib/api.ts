@@ -7,6 +7,7 @@ import type {
   AskResponse,
   ProjectGraph,
   Issue,
+  Note,
 } from "./types";
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
@@ -91,4 +92,16 @@ export const api = {
     }),
 
   deleteProject: (id: string) => req<{ ok: boolean }>(`/projects/${id}`, { method: "DELETE" }),
+
+  listNotes: (fnId: string) => req<Note[]>(`/functions/${fnId}/notes`),
+
+  createNote: (fnId: string, startLine: number, endLine: number, text: string) =>
+    req<Note>(`/functions/${fnId}/notes`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ start_line: startLine, end_line: endLine, text }),
+    }),
+
+  deleteNote: (fnId: string, noteId: string) =>
+    req<{ ok: boolean }>(`/functions/${fnId}/notes/${noteId}`, { method: "DELETE" }),
 };
