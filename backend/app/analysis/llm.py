@@ -194,7 +194,8 @@ representation, prefer the math representation -- that conversion is this tool's
 the provided source.
 - code_lines fields must reference real line numbers from the provided source (cross-highlighting \
 depends on this being accurate).
-- Keep every string short -- this renders in a fixed-width UI panel, not a document.
+- Keep strings short -- this renders in a narrow UI panel. EXCEPTION: equation.steps is a full \
+mathematical derivation and is expected to be long (see its rule below); never truncate it for brevity.
 - Whenever representation isn't "sequence", equation.tokens MUST be non-empty -- it's what actually \
 renders as the formula (the UI shows tokens via KaTeX per-symbol, not latex directly). Break the \
 expression into MathToken pieces, e.g. for h = tanh(W₁x + b₁): [{text:"h",kind:"var"}, \
@@ -214,16 +215,34 @@ separate tokens for each cell, then \\end{bmatrix}; each would fail to parse alo
 - equation.mapping[].symbol is rendered as PLAIN TEXT, never through KaTeX -- it must be a bare symbol \
 like "W" or "b_1" or "transform", never LaTeX markup like "\\text{transform}" or anything with a backslash \
 or braces in it. equation.mapping[].code is the exact source expression it stands for (e.g. "data.site_xmat").
-- When a function builds up its result across SEVERAL lines (assigns into a matrix/tensor piece by piece, \
-accumulates a value, branches into different formulas per case), fill equation.steps: one entry per \
-meaningful line or tight group of lines, in source order. Each step's code is the verbatim source snippet \
-for just that line/group, code_lines its real line numbers, latex the resulting partial expression in that \
-step as one LaTeX string (e.g. step 1 for `transform = np.eye(4)` -> latex "T = I_4"; step 2 for \
-`transform[:3,:3] = R` -> latex "T_{0:3,0:3} = R"), and explanation one short Korean sentence for that step \
-alone. This is the primary way multi-line derivations should be shown -- prefer populating steps over \
-cramming everything into equation.tokens when the function has more than one meaningful computational line. \
-equation.tokens should still hold the final combined formula (or stay minimal if steps already tells the \
-story); equation.latex likewise holds the final result, not a duplicate of the steps.
+- equation.steps IS THIS TOOL'S MAIN OUTPUT: a COMPLETE line-by-line mathematical formalization of the \
+whole function, read top to bottom like a derivation in a paper. This is what the user came for -- a \
+partial or summarized steps list is a failure, even if equation.tokens looks fine.
+  * COVERAGE: walk the function body in source order and emit a step for EVERY line that computes, \
+assigns, tests, aggregates, filters, sorts, or returns something. Do not stop after 3-5 steps; a 40-line \
+function typically needs 15-30 steps. The ONLY lines you may skip are ones with no mathematical content \
+whatsoever: import, print/logging, comments, docstrings, and pure plotting/file-IO calls.
+  * NOTATION: use real mathematical notation, not pseudo-code with an equals sign. Reach for the standard \
+vocabulary as the code demands it: set-builder \\mathcal{H} = \\{h_1,\\dots,h_N\\}, cardinality N = |\\mathcal{H}|, \
+indicator \\mathbf{1}[\\cdot] for a boolean test, \\sum / \\prod / \\bigcup / \\max_{1\\le i\\le N} / \\min for \
+loops and reductions, \\cases for if/elif/else, \\in \\mathbb{R}^{n}, blocks and slices \
+(T_{1:3,1:3}, \\mathbf{p} = T_{1:3,4}), \\varnothing for None/empty, \\prec for a sort/comparison \
+relation, \\|\\cdot\\| for norms, superscript-* for a target/desired value. Declare each symbol the first \
+time it appears (e.g. a step whose latex is "\\mathcal{H} = \\{h_1,\\dots,h_N\\},\\quad N = |\\mathcal{H}|").
+  * DERIVED VARIABLES: name intermediate results with meaningful symbols (\\mathbf{p}_{\\text{obj}}, \
+e_{\\text{rel}}, r_{\\text{pass}}) rather than reusing raw Python identifiers, and keep those symbols \
+consistent across every later step that uses them.
+  * BRANCHES/LOOPS: an if/else that assigns the same target two ways becomes ONE step with a \\cases \
+block, not two disconnected steps. A for-loop that accumulates becomes a \\sum / \\bigcup over an index, \
+not a step per iteration.
+  * FINAL STEP: the last step states the returned value, gathering the derived symbols into one \
+expression (e.g. "\\mathcal{S} = (N_{\\text{pass}}, r_{\\text{pass}}, e^{\\max}_{\\text{obj}}, \\dots)" \
+or the assembled matrix).
+  * explanation is one Korean sentence for that step alone, saying what it means -- not a restatement of \
+the code. It is rendered as PLAIN TEXT, so it must contain no LaTeX at all: write "히스토리 집합의 크기", \
+never "집합 \\mathcal{H}의 크기" (a backslash macro there shows up as literal garbage on screen).
+  equation.tokens holds the single headline formula (the function's essence in one line); equation.latex \
+the same as one string. Never let tokens duplicate the steps.
 - shape entries are symbolic (e.g. "B", "6", "5") when the batch dimension is runtime-only; never \
 invent a concrete batch size.
 - The context includes a STATICALLY VERIFIED SHAPES section produced by deterministic AST analysis \

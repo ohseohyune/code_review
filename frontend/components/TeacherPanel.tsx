@@ -466,7 +466,7 @@ export default function TeacherPanel({
                               </code>
                             </div>
                             <div
-                              className="rounded-lg px-3 py-2.5 text-[17px]"
+                              className="overflow-x-auto rounded-lg px-3 py-2.5 text-[17px]"
                               style={{ background: "#FAFAFC", fontFamily: "Georgia, 'Times New Roman', serif" }}
                               dangerouslySetInnerHTML={{ __html: renderTex(step.latex) }}
                             />
