@@ -11,7 +11,6 @@ export default async function OverviewPage({ params }: { params: Promise<{ id: s
     ["분석된 파일", String(project.analyzed_file_count), "#1D1D1F"],
     ["클래스", String(project.class_count), "#1D1D1F"],
     ["함수", String(project.function_count), "#1D1D1F"],
-    ["진입점 후보", project.entry_points[0]?.name ?? "없음", "#007AFF"],
   ];
 
   return (
@@ -24,7 +23,7 @@ export default async function OverviewPage({ params }: { params: Promise<{ id: s
         {project.summary}
       </h1>
 
-      <div className="mt-6 grid grid-cols-4 gap-3.5">
+      <div className="mt-6 grid grid-cols-3 gap-3.5">
         {stats.map(([label, value, color]) => (
           <div key={label} className="rounded-2xl bg-white p-4" style={{ border: "0.5px solid rgba(84,84,86,.18)" }}>
             <div className="text-[12px] text-[rgba(60,60,67,.6)]">{label}</div>
