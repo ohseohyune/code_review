@@ -23,8 +23,35 @@ def require_root_dir(root_dir: str) -> Path:
     return path
 
 
-def persist_project(db: Session, name: str, root_dir: Path) -> ProjectRow:
+def _apply_entry_override(analysis: ProjectAnalysis, entry_file: str) -> None:
+    """The user explicitly starred a file as the entry point in the upload picker --
+    that must win over the heuristic scan (which just takes the first
+    if __name__ == "__main__" block or conventional name it finds across the whole
+    project, and can land on an unrelated test file). Prefer, in order: a function in
+    that file the heuristic already picked (nothing to do), a top-level main()/run(),
+    then any top-level function in the file. If the file has no functions at all,
+    leave the heuristic's result alone rather than pointing at nothing.
+    """
+    in_file = [f for f in analysis.functions if f.file_path == entry_file and f.class_name is None]
+    if not in_file:
+        return
+    if analysis.entry_point:
+        current = next((f for f in in_file if f.id == analysis.entry_point["function_id"]), None)
+        if current:
+            return  # heuristic already landed on this exact file -- already correct
+    for name in ("main", "run"):
+        fn = next((f for f in in_file if f.name == name), None)
+        if fn:
+            analysis.entry_point = {"function_id": fn.id, "reason": "사용자가 지정한 진입 파일"}
+            return
+    fn = min(in_file, key=lambda f: f.line_range[0])
+    analysis.entry_point = {"function_id": fn.id, "reason": "사용자가 지정한 진입 파일"}
+
+
+def persist_project(db: Session, name: str, root_dir: Path, entry_hint: str | None = None) -> ProjectRow:
     analysis: ProjectAnalysis = analyze_project(root_dir)
+    if entry_hint:
+        _apply_entry_override(analysis, entry_hint)
     project_id = str(uuid.uuid4())
 
     row = ProjectRow(

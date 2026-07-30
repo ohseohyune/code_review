@@ -150,7 +150,9 @@ export default function UploadPage() {
     setError(null);
     track("project_analysis_started", { props: { source: "upload" } });
     try {
-      const { project_id } = await api.createProject(includedFiles);
+      const includedPaths = new Set(includedFiles.map(pathOf));
+      const activeEntry = Array.from(entryPaths).filter((p) => includedPaths.has(p));
+      const { project_id } = await api.createProject(includedFiles, activeEntry);
       track("project_created", { projectId: project_id, props: { source: "upload", file_count: includedFiles.length } });
       track("project_analysis_completed", { projectId: project_id });
       router.push(`/projects/${project_id}/progress`);

@@ -34,11 +34,12 @@ export const api = {
   createDemoProject: () =>
     req<{ project_id: string }>("/projects/demo", { method: "POST" }),
 
-  createProject: (files: File[]) => {
+  createProject: (files: File[], entry: string[] = []) => {
     const form = new FormData();
     for (const f of files) {
       form.append("files", f, (f as any).webkitRelativePath || f.name);
     }
+    for (const e of entry) form.append("entry", e);
     return req<{ project_id: string }>("/projects", { method: "POST", body: form });
   },
 

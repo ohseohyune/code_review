@@ -197,7 +197,7 @@ def _infer_project_name(files: list[UploadFile]) -> str:
 
 
 @router.post("")
-async def create_project(files: list[UploadFile], db: Session = Depends(get_db)):
+async def create_project(files: list[UploadFile], entry: list[str] = Form(default=[]), db: Session = Depends(get_db)):
     if not files:
         raise HTTPException(400, "no files uploaded")
     if len(files) > MAX_FILES:
@@ -225,7 +225,8 @@ async def create_project(files: list[UploadFile], db: Session = Depends(get_db))
         shutil.rmtree(project_dir, ignore_errors=True)
         raise
 
-    row = persist_project(db, name=_infer_project_name(files), root_dir=project_dir)
+    row = persist_project(db, name=_infer_project_name(files), root_dir=project_dir,
+                           entry_hint=entry[0] if entry else None)
     return {"project_id": row.id}
 
 
