@@ -9,8 +9,8 @@ const jbMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Code to Math AI Teacher",
-  description: "코드를 읽지 말고, 코드를 배우세요.",
+  title: "MathBridge — FCTM",
+  description: "Turn implementation into intuition.",
 };
 
 export default function RootLayout({

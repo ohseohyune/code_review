@@ -34,8 +34,8 @@ export default function TopNav() {
         className="ml-1 flex h-7 items-center gap-1.5 rounded-full px-2.5 text-[12.5px] font-semibold"
         style={{ color: "rgba(60,60,67,.7)" }}
       >
-        <span className="flex h-[18px] w-[18px] items-center justify-center rounded-[5px] bg-[#007AFF] text-[11px] text-white">
-          ∑
+        <span className="flex h-[18px] w-[18px] items-center justify-center rounded-[5px] font-mono text-[10px] text-white" style={{ background: "#0B0D12" }}>
+          M
         </span>
         홈
       </a>
