@@ -20,6 +20,7 @@ from app.analysis.ast_parser import FunctionRecord, ProjectAnalysis
 from app.schemas import FunctionAnalysis, Issue, CodeRef, VariableInfo, EquationInfo, ShapeStep, FlowNode
 
 MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o")
+REASONING_EFFORT = os.environ.get("OPENAI_REASONING_EFFORT", "low")
 
 
 def _strict_schema(schema: dict) -> dict:
@@ -104,6 +105,12 @@ def _call_structured(system_prompt: str, user_content: str, schema_model: type[B
     """
     client = OpenAI()  # reads OPENAI_API_KEY from env
     schema = _strict_schema(schema_model.model_json_schema())
+    # Reasoning models (gpt-5 and friends) spend minutes at their default effort on a
+    # prompt this size -- long enough that the request dies before the panel ever
+    # renders. Measured on a 20-line function: ~76s at "low" vs >300s at the default,
+    # for an identical derivation. Non-reasoning models reject the parameter outright,
+    # so only send it when it applies.
+    extra = {"reasoning_effort": REASONING_EFFORT} if MODEL.startswith("gpt-5") else {}
     resp = client.chat.completions.create(
         model=MODEL,
         response_format={
@@ -114,6 +121,7 @@ def _call_structured(system_prompt: str, user_content: str, schema_model: type[B
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_content},
         ],
+        **extra,
     )
     raw = _strip_control_chars(_fix_equation_latex_escapes(json.loads(resp.choices[0].message.content)))
     return schema_model.model_validate(raw)
