@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { api } from "@/lib/api";
 import DeleteProjectButton from "@/components/DeleteProjectButton";
-import LearningPathCard from "@/components/LearningPathCard";
 
 export default async function OverviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -34,10 +33,7 @@ export default async function OverviewPage({ params }: { params: Promise<{ id: s
         ))}
       </div>
 
-      <div className="mt-6 grid grid-cols-[1.35fr_1fr] gap-4">
-        <LearningPathCard projectId={id} steps={project.learning_path} />
-
-        <div className="flex flex-col gap-4">
+      <div className="mt-6 grid grid-cols-2 gap-4 items-start">
           <div className="rounded-2xl bg-white p-5" style={{ border: "0.5px solid rgba(84,84,86,.18)" }}>
             <h2 className="text-[15px] font-semibold">진입점 후보</h2>
             <div className="mt-3 flex flex-col gap-2">
@@ -86,7 +82,6 @@ export default async function OverviewPage({ params }: { params: Promise<{ id: s
               </ul>
             </div>
           )}
-        </div>
       </div>
 
       {notes.length > 0 && (
