@@ -5,6 +5,7 @@ import type { FunctionSource, Note } from "@/lib/types";
 import { useHighlight } from "@/lib/highlight-context";
 import { useAsk } from "@/lib/ask-context";
 import { api } from "@/lib/api";
+import { getReadLine, markReadLine } from "@/lib/progress";
 
 type Selection = { text: string; top: number; left: number; startLine: number; endLine: number };
 
@@ -15,18 +16,32 @@ export default function CodePanel({ fn }: { fn: FunctionSource }) {
   const monacoRef = useRef<Parameters<OnMount>[1] | null>(null);
   const decorationIds = useRef<string[]>([]);
   const noteDecorationIds = useRef<string[]>([]);
+  const readDecorationIds = useRef<string[]>([]);
+  const readDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [startLine] = fn.line_range;
   const [selection, setSelection] = useState<Selection | null>(null);
   const [composing, setComposing] = useState(false);
   const [draftNote, setDraftNote] = useState("");
   const [notes, setNotes] = useState<Note[]>([]);
   const [showNotes, setShowNotes] = useState(false);
+  const [readLine, setReadLine] = useState(0);
 
   useEffect(() => {
     setNotes([]);
     setShowNotes(false);
     api.listNotes(fn.id).then(setNotes).catch(() => {});
+    setReadLine(getReadLine(fn.id));
   }, [fn.id]);
+
+  function trackReadProgress(editor: NonNullable<typeof editorRef.current>) {
+    if (readDebounce.current) clearTimeout(readDebounce.current);
+    readDebounce.current = setTimeout(() => {
+      const ranges = editor.getVisibleRanges();
+      const bottom = ranges[ranges.length - 1]?.endLineNumber;
+      if (!bottom) return;
+      setReadLine(markReadLine(fn.id, startLine + bottom - 1));
+    }, 400);
+  }
 
   const onMount: OnMount = (editor, monaco) => {
     editorRef.current = editor;
@@ -61,7 +76,9 @@ export default function CodePanel({ fn }: { fn: FunctionSource }) {
     editor.onDidScrollChange(() => {
       setSelection(null);
       setComposing(false);
+      trackReadProgress(editor);
     });
+    trackReadProgress(editor);
   };
 
   function clearSelection() {
@@ -135,6 +152,23 @@ export default function CodePanel({ fn }: { fn: FunctionSource }) {
       }))
     );
   }, [notes, startLine]);
+
+  useEffect(() => {
+    const editor = editorRef.current;
+    const monaco = monacoRef.current;
+    if (!editor || !monaco) return;
+    const line = readLine - startLine + 1;
+    const inRange = readLine > 0 && line >= 1 && line <= fn.line_range[1] - startLine + 1;
+    readDecorationIds.current = editor.deltaDecorations(
+      readDecorationIds.current,
+      inRange
+        ? [{
+            range: new monaco.Range(line, 1, line, 1),
+            options: { isWholeLine: true, glyphMarginClassName: "read-glyph", glyphMarginHoverMessage: { value: "여기까지 읽었어요" } },
+          }]
+        : []
+    );
+  }, [readLine, startLine, fn.line_range]);
 
   return (
     <div className="flex h-full flex-col">

@@ -54,3 +54,8 @@
   content: "📝";
   font-size: 11px;
 }
+
+.read-glyph::after {
+  content: "💩";
+  font-size: 12px;
+}

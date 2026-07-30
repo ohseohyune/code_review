@@ -4,6 +4,7 @@
 
 const DONE_KEY = (projectId: string) => `code-teacher:done:${projectId}`;
 const MODE_KEY = "code-teacher:mode";
+const READ_LINE_KEY = (fnId: string) => `code-teacher:read-line:${fnId}`;
 
 export type TeacherMode = "learning" | "expert";
 
@@ -30,4 +31,19 @@ export function getMode(): TeacherMode {
 
 export function setMode(mode: TeacherMode) {
   localStorage.setItem(MODE_KEY, mode);
+}
+
+// Furthest line the user has scrolled to within a function -- a rough "read up to
+// here" marker so re-opening a long function shows where they left off, instead of
+// them having to scroll and guess. Per-function, per-browser; never overwrites a
+// deeper mark with a shallower one (scrolling back up shouldn't erase progress).
+export function getReadLine(fnId: string): number {
+  if (typeof window === "undefined") return 0;
+  return Number(localStorage.getItem(READ_LINE_KEY(fnId)) ?? 0);
+}
+
+export function markReadLine(fnId: string, line: number): number {
+  const furthest = Math.max(getReadLine(fnId), line);
+  localStorage.setItem(READ_LINE_KEY(fnId), String(furthest));
+  return furthest;
 }
