@@ -25,24 +25,20 @@ def _learning_path(project: ProjectRow, functions: list[FunctionRow]) -> list[Le
         return len(body_lines) <= 1 and body_lines and body_lines[0].startswith("raise")
 
     frontier = list(order)
-    while frontier and len(order) < 6:
+    while frontier:
         current = frontier.pop(0)
         for callee_id in (by_id[current].calls or []):
             if (callee_id in by_id and callee_id not in order
                     and by_id[callee_id].source.strip() and not is_stub(by_id[callee_id])):
                 order.append(callee_id)
                 frontier.append(callee_id)
-                if len(order) >= 6:
-                    break
 
     for f in functions:
-        if len(order) >= 6:
-            break
         if f.id not in order and not is_stub(f):
             order.append(f.id)
 
     steps = []
-    for i, fid in enumerate(order[:6]):
+    for i, fid in enumerate(order):
         fn = by_id[fid]
         why = ("프로그램의 진입점입니다" if fid == entry_id
                else f"{by_id[order[i - 1]].name}() 에서 호출됩니다" if i > 0 else "핵심 로직입니다")
