@@ -42,6 +42,15 @@ export const api = {
     return req<{ project_id: string }>("/projects", { method: "POST", body: form });
   },
 
+  traceImports: (files: File[], entry: string[]) => {
+    const form = new FormData();
+    for (const f of files) {
+      form.append("files", f, (f as any).webkitRelativePath || f.name);
+    }
+    for (const e of entry) form.append("entry", e);
+    return req<{ files: string[] }>("/projects/trace-imports", { method: "POST", body: form });
+  },
+
   createProjectFromGithub: (githubUrl: string) =>
     req<{ project_id: string }>("/projects/github", {
       method: "POST",

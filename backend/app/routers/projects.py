@@ -1,13 +1,14 @@
 import re
 import shutil
 import tarfile
+import tempfile
 import uuid
 import zipfile
 from io import BytesIO
 from pathlib import Path
 
 import httpx
-from fastapi import APIRouter, Depends, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -18,6 +19,7 @@ from app.schemas import ProjectSummary, ProjectTree, FunctionListItem, ClassList
 from app.project_summary import build_project_summary
 from app.analysis.ast_parser import analyze_project
 from app.analysis.graph import build_function_graph, build_import_graph
+from app.analysis.import_tracer import trace_dependencies
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 UPLOAD_ROOT = Path(__file__).resolve().parent.parent.parent / "uploads"
@@ -98,6 +100,37 @@ def _extract_tar(data: bytes, project_dir: Path, strip_prefix: str) -> None:
             continue
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(f.read())
+
+
+@router.post("/trace-imports")
+async def trace_imports(files: list[UploadFile], entry: list[str] = Form(...)):
+    """Given the .py files a user has already selected in the upload picker plus
+    which of them are entry points, return exactly the subset actually reachable
+    by following real (ast-parsed) local imports -- so picking main.py doesn't
+    drag in every unrelated script that happened to be in the same folder.
+    Runs against a throwaway temp dir, never the permanent uploads/ store.
+    """
+    with tempfile.TemporaryDirectory(dir=UPLOAD_ROOT) as tmp:
+        project_dir = Path(tmp)
+        for f in files:
+            content = await f.read()
+            dest = _safe_dest(project_dir, f.filename or "")
+            if dest is None:
+                continue
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_bytes(content)
+
+        # A folder picker's webkitRelativePath prefixes every entry with the picked
+        # folder's own name (e.g. "myrepo/main.py") -- that name isn't part of the
+        # real Python import root, so strip it before resolving imports and add it
+        # back on the way out to match what the frontend's file list expects.
+        tops = {f.filename.split("/", 1)[0] for f in files if f.filename and "/" in f.filename}
+        prefix = f"{tops.pop()}/" if len(tops) == 1 else ""
+        import_root = project_dir / prefix if prefix else project_dir
+        stripped_entry = [e[len(prefix):] if e.startswith(prefix) else e for e in entry]
+
+        traced = trace_dependencies(import_root, stripped_entry)
+        return {"files": [f"{prefix}{p}" for p in traced]}
 
 
 _GITHUB_URL_RE = re.compile(r"github\.com[:/]+([\w.-]+)/([\w.-]+?)(?:\.git)?(?:/|$|[?#])")
