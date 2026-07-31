@@ -6,7 +6,7 @@ import { SEVERITY, EQUATION_REPRESENTATION, STEP_LABELS } from "@/lib/certainty"
 import type { TeacherMode } from "@/lib/progress";
 import { useHighlight } from "@/lib/highlight-context";
 import { useAsk } from "@/lib/ask-context";
-import { renderTex, plainSymbol } from "@/lib/katex-render";
+import { renderTex, plainSymbol, proseText } from "@/lib/katex-render";
 import { api, ApiError } from "@/lib/api";
 import { track } from "@/lib/analytics";
 import CardShell from "./CardShell";
@@ -470,7 +470,7 @@ export default function TeacherPanel({
                               style={{ background: "#FAFAFC", fontFamily: "Georgia, 'Times New Roman', serif" }}
                               dangerouslySetInnerHTML={{ __html: renderTex(step.latex) }}
                             />
-                            <p className="mt-1.5 text-[12.5px] leading-snug text-[rgba(60,60,67,.7)]">{step.explanation}</p>
+                            <p className="mt-1.5 text-[12.5px] leading-snug text-[rgba(60,60,67,.7)]">{proseText(step.explanation)}</p>
                           </div>
                         ))}
                       </div>
@@ -515,7 +515,7 @@ export default function TeacherPanel({
                       </div>
                     )}
                     <p className="mt-3 rounded-lg bg-[rgba(0,122,255,.06)] p-3 text-[13px] leading-snug">
-                      {analysis.equation.intuition}
+                      {proseText(analysis.equation.intuition)}
                     </p>
                     {analysis.equation.numeric_example && <NumericExample text={analysis.equation.numeric_example} />}
                     {analysis.equation.evidence.length > 0 && (

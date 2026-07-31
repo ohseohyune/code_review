@@ -19,7 +19,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "https://bureau-pair-shaped-upgrade.trycloudflare.com",
+        "https://suzuki-models-remedies-liberty.trycloudflare.com",
     ],
     allow_methods=["*"],
     allow_headers=["*"],

@@ -39,3 +39,24 @@ export function renderTex(text: string): string {
 export function plainSymbol(text: string): string {
   return text.replace(/\\text\{([^}]*)\}/g, "$1").replace(/\\[a-zA-Z]+/g, "").replace(/[{}\\]/g, "");
 }
+
+const PROSE_MACROS: Record<string, string> = {
+  epsilon: "ε", varepsilon: "ε", alpha: "α", beta: "β", gamma: "γ", delta: "δ",
+  Delta: "Δ", theta: "θ", lambda: "λ", mu: "μ", pi: "π", sigma: "σ", Sigma: "Σ",
+  phi: "φ", omega: "ω", Omega: "Ω", tau: "τ", eta: "η", rho: "ρ",
+  times: "×", cdot: "·", leq: "≤", geq: "≥", neq: "≠", approx: "≈",
+  in: "∈", subset: "⊂", cup: "∪", cap: "∩", varnothing: "∅", infty: "∞",
+  sum: "∑", prod: "∏", max: "max", min: "min", log: "log", exp: "exp",
+};
+
+// explanation/intuition fields are prose rendered as plain text, but the model still
+// slips a LaTeX macro in now and then -- which would otherwise show up on screen as a
+// literal backslash. Swap the common ones for their real glyph and drop the leftover
+// markup, so the sentence reads correctly no matter how well the model behaved.
+export function proseText(text: string): string {
+  return text
+    .replace(/\\text(?:tt|bf|rm)?\{([^}]*)\}/g, "$1")
+    .replace(/\\([a-zA-Z]+)/g, (m, name: string) => PROSE_MACROS[name] ?? "")
+    .replace(/[{}$]/g, "")
+    .replace(/[ \t]{2,}/g, " ");
+}
